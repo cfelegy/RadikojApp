@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Localization
+@using Microsoft.Extensions.Options
+
+@inject SharedViewLocalizer Localizer
+@inject IOptions<RequestLocalizationOptions> Options
+
+@{
+	var returnUrl = string.Concat("~", Context.Request.Path.Value ?? "/");
+	var cultureItems = Options.Value!.SupportedCultures!
+		.Select(x => new SelectListItem { Value = x.Name, Text = x.NativeName })
+		.ToList();
+	var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+}
+
+<div>
+	<form id="selectLanguage" asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@returnUrl" 
+		method="post">
+		
+		<label asp-for="@requestCulture!.RequestCulture.Culture.Name">@Localizer["LanguageSelect"]</label>
+		<select name="culture" onchange="this.form.submit();" asp-for="@requestCulture!.RequestCulture.Culture.Name" asp-items="cultureItems">
+		</select>
+	</form>
+
+	Currently selected: @requestCulture!.RequestCulture.Culture.EnglishName;
+</div>

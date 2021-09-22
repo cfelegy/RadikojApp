@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc.Razor;
+using GaspApp;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddLocalization();
+builder.Services.AddSingleton<SharedViewLocalizer>();
 builder.Services.AddControllersWithViews()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
     .AddDataAnnotationsLocalization();
@@ -37,6 +39,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseRequestLocalization();
 
 app.UseRouting();
 

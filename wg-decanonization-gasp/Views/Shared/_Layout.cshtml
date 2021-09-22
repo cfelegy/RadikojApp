@@ -1,4 +1,4 @@
-﻿@inject IViewLocalizer Localizer
+﻿@inject SharedViewLocalizer Localizer
 
 <!DOCTYPE html>
 <html>
@@ -13,7 +13,8 @@
 		</main>
 		<footer>
 			<hr />
-			<p>&copy; @DateTime.Now.Year felegy.net</p>
+			<p>&copy; @DateTime.Now.Year Christopher Felegy / USF Big Data Analytics Lab </p>
+			@await Html.PartialAsync("_CulturePartial")
 		</footer>
 	</body>
 </html>

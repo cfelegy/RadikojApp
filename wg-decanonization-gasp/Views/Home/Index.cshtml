@@ -1,7 +1,7 @@
-﻿@inject IViewLocalizer Localizer
+﻿@inject SharedViewLocalizer Localizer
 
 @{
 	ViewData["Title"] = Localizer["Home"];
 }
 
-<h1>Localizer["Welcome"]</h1>
+<h1>@Localizer["Welcome"]</h1>
