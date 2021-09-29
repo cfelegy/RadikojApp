@@ -20,6 +20,4 @@
 		<select name="culture" onchange="this.form.submit();" asp-for="@requestCulture!.RequestCulture.Culture.Name" asp-items="cultureItems">
 		</select>
 	</form>
-
-	Currently selected: @requestCulture!.RequestCulture.Culture.EnglishName;
 </div>

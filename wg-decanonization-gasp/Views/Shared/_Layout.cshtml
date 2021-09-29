@@ -6,15 +6,24 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>@ViewData["Title"] - @Localizer["AppName"]</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css" />
 	</head>
 	<body>
+		<nav class="level">
+
+		</nav>
 		<main>
 			@RenderBody()
 		</main>
-		<footer>
-			<hr />
-			<p>&copy; @DateTime.Now.Year Christopher Felegy / USF Big Data Analytics Lab </p>
-			@await Html.PartialAsync("_CulturePartial")
+		<footer class="footer">
+			<div class="columns">
+				<div class="column content has-text-centered">
+					<p>&copy; @DateTime.Now.Year Christopher Felegy, USF Big Data Analytics Lab</p>
+				</div>
+				<div class="column">
+					@await Html.PartialAsync("_CulturePartial")
+				</div>
+			</div>
 		</footer>
 	</body>
 </html>
