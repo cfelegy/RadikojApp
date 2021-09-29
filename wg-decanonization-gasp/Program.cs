@@ -1,15 +1,13 @@
 using Microsoft.AspNetCore.Mvc.Razor;
 using GaspApp;
+using GaspApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Localization
 builder.Services.AddLocalization();
 builder.Services.AddSingleton<SharedViewLocalizer>();
-builder.Services.AddControllersWithViews()
-    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-    .AddDataAnnotationsLocalization();
-
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     /* TODO: Validate these cultures with the team. UN website lists the current official languages as:
@@ -25,6 +23,14 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SetDefaultCulture(supportedCultures[0])
         .AddSupportedCultures(supportedCultures)
         .AddSupportedUICultures(supportedCultures);
+});
+
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+    .AddDataAnnotationsLocalization();
+builder.Services.AddDbContext<GaspDbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
 });
 
 var app = builder.Build();
