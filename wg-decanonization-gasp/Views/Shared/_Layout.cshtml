@@ -2,28 +2,64 @@
 
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>@ViewData["Title"] - @Localizer["AppName"]</title>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css" />
-	</head>
-	<body>
-		<nav class="level">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - @Localizer["AppName"]</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css" />
+	<link rel="stylesheet" href="~/css/style.css" />
+</head>
+<body>
+	<nav class="navbar is-info">
+		<div class="navbar-brand">
+			<span class="navbar-item">
+				Global Anthropology Syllabus Project
+			</span>
+		</div>
+		<div class="navbar-menu">
+			<div class="navbar-start">
+				<a class="navbar-item" href="@Url.Action("Index", "Home")">
+					@Localizer["Home"]
+				</a>
+				<a class="navbar-item">
+					@Localizer["Articles"]
+				</a>
+				<a class="navbar-item">
+					@Localizer["Survey"]
+				</a>
+			</div>
+			<div class="navbar-end">
+				<div class="navbar-item has-dropdown is-hoverable">
+					<span class="navbar-link">
+						⚙️
+					</span>
+					<div class="navbar-dropdown">
+						@if (!User.Identity.IsAuthenticated)
+						{
+							<a class="navbar-item" href="@Url.Action("SignIn", "Account")">@Localizer["Sign In"]</a>
+						}
+						else
+						{
+							<a class="navbar-item" href="@Url.Action("SignOut", "Account")">@Localizer["Sign Out"]</a>
+						}
 
-		</nav>
-		<main>
-			@RenderBody()
-		</main>
-		<footer class="footer">
-			<div class="columns">
-				<div class="column content has-text-centered">
-					<p>&copy; @DateTime.Now.Year Christopher Felegy, USF Big Data Analytics Lab</p>
-				</div>
-				<div class="column">
-					@await Html.PartialAsync("_CulturePartial")
+					</div>
 				</div>
 			</div>
-		</footer>
-	</body>
+		</div>
+	</nav>
+	<main>
+		@RenderBody()
+	</main>
+	<footer class="footer">
+		<div class="columns">
+			<div class="column content">
+				<p>&copy; @DateTime.Now.Year Christopher Felegy, USF Big Data Analytics Lab</p>
+			</div>
+			<div class="column is-narrow">
+				@await Html.PartialAsync("_CulturePartial")
+			</div>
+		</div>
+	</footer>
+</body>
 </html>

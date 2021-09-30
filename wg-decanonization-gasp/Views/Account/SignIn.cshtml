@@ -5,21 +5,26 @@
 	ViewData["Title"] = Localizer["Sign In"];
 }
 
-<form class="form" asp-action="SignIn" asp-route-returnUrl="@ViewData["ReturnUrl"]">
-	<div asp-validation-summary="All" class="is-danger"></div>
-	<div class="field">
-		<div class="control">
-			<label class="label" asp-for="@Model.Email">@Localizer["E-Mail"]</label>
-			<input class="input" type="email" asp-for="@Model.Email" />
-		</div>
-	</div>
-	<div class="field">
-		<div class="control">
-			<label class="label" asp-for="@Model.Password">@Localizer["Password"]</label>
-			<input class="input" type="password" asp-for="@Model.Password" />
-		</div>
-	</div>
-	<div class="control">
-		<button class="button is-link" type="submit">@Localizer["Submit"]</button>
-	</div>
-</form>
+<div class="container">
+	<section class="section">
+		<h1 class="title">@Localizer["Sign In"]</h1>
+		<form class="form" asp-action="SignIn" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+			<div asp-validation-summary="All" class="is-danger"></div>
+			<div class="field">
+				<div class="control">
+					<label class="label" asp-for="@Model.Email">@Localizer["E-Mail"]</label>
+					<input class="input" type="email" asp-for="@Model.Email" />
+				</div>
+			</div>
+			<div class="field">
+				<div class="control">
+					<label class="label" asp-for="@Model.Password">@Localizer["Password"]</label>
+					<input class="input" type="password" asp-for="@Model.Password" />
+				</div>
+			</div>
+			<div class="control">
+				<button class="button is-link" type="submit">@Localizer["Submit"]</button>
+			</div>
+		</form>
+	</section>
+</div>
