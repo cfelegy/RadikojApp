@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using GaspApp;
 using GaspApp.Data;
 using Microsoft.EntityFrameworkCore;
+using GaspApp.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using GaspApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +37,15 @@ builder.Services.AddDbContext<GaspDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
 });
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+    });
+builder.Services.AddSingleton<IPasswordHasher<Account>>(new PasswordHasher<Account>());
+builder.Services.AddScoped<AccountService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -49,6 +62,7 @@ app.UseRequestLocalization();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
