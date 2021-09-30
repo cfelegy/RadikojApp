@@ -8,6 +8,11 @@
 <h1>@Localizer["Error"]</h1>
 <h2>@Localizer["Error_Sub"]</h2>
 
+@if (Model.ErrorCode is not null)
+{
+	<h2>HTTP @Model.ErrorCode</h2>
+}
+
 @if (Model.ShowRequestId)
 {
 	<p>
