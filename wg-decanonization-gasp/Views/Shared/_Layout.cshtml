@@ -33,13 +33,16 @@
 					<span class="navbar-link">
 						⚙️
 					</span>
-					<div class="navbar-dropdown">
+					<div class="navbar-dropdown is-right">
 						@if (!User.Identity.IsAuthenticated)
 						{
 							<a class="navbar-item" href="@Url.Action("SignIn", "Account")">@Localizer["Sign In"]</a>
 						}
 						else
 						{
+							<span class="navbar-item">Signed in as @User.Identity.Name</span>
+							<a class="navbar-item" href="@Url.Action("Index", "Dashboard")">@Localizer["Dashboard"]</a>
+							<hr class="navbar-divider">
 							<a class="navbar-item" href="@Url.Action("SignOut", "Account")">@Localizer["Sign Out"]</a>
 						}
 

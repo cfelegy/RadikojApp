@@ -58,10 +58,12 @@ namespace GaspApp.Services
 
         private IEnumerable<Claim> GetClaims(Account account)
         {
-            var claims = new List<Claim>();
-            
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()));
-            claims.Add(new Claim(ClaimTypes.Email, account.Email));
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
+                new Claim(ClaimTypes.Name, account.DisplayName),
+                new Claim(ClaimTypes.Email, account.Email)
+            };
             // TODO: Role Claims
 
             return claims;

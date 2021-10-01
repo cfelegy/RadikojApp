@@ -40,8 +40,8 @@ builder.Services.AddDbContext<GaspDbContext>(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
+        options.LoginPath = "/Account/SignIn";
+        options.LogoutPath = "/Account/SignOut";
     });
 builder.Services.AddSingleton<IPasswordHasher<Account>>(new PasswordHasher<Account>());
 builder.Services.AddScoped<AccountService>();
