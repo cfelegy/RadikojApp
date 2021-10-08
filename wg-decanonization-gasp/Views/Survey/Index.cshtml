@@ -1,5 +1,42 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@inject SharedViewLocalizer Localizer
+
 @{
+	ViewData["Title"] = Localizer["Survey"];
 }
+
+<div class="container">
+	<section class="section">
+		<h1 class="title">@Localizer["Survey"]</h1>
+		<h2 class="subtitle">Week 0: Survey Title</h2>
+	</section>
+	<section class="section">
+		<form class="form">
+			<div class="field">
+				<label class="label">What textbook do you use?</label>
+				<div class="control">
+					<input class="input" type="text" />
+				</div>
+			</div>
+			<div class="field">
+				<label class="label">What questions would you like to see here?</label>
+				<div class="control">
+					<textarea class="textarea"></textarea>
+				</div>
+			</div>
+			<div class="field">
+				<label class="label">Do your classes meet in person?</label>
+				<div class="control">
+					<label class="radio">
+						<input type="radio" name="answer"/>Yes
+					</label>
+					<label class="radio">
+						<input type="radio" name="answer"/>No
+					</label>
+				</div>
+			</div>
+			<div class="control">
+				<button class="button is-success" type="submit">@Localizer["Submit"]</button>
+			</div>
+		</form>
+	</section>
+</div>
