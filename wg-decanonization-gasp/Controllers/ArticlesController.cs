@@ -2,6 +2,7 @@
 using GaspApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace GaspApp.Controllers
@@ -17,7 +18,7 @@ namespace GaspApp.Controllers
 
         public IActionResult Index()
         {
-            var articles = _dbContext.Articles.ToList();
+            var articles = _dbContext.Articles.Include(x => x.Contents).ToList();
             var model = new Models.ArticlesViewModels.ArticlesIndexViewModel
             {
                 Articles = articles
@@ -35,6 +36,7 @@ namespace GaspApp.Controllers
                 return NotFound();
             }
             _dbContext.Entry(article).Collection(x => x.Contents).Load();
+            _dbContext.Entry(article).Reference(x => x.Author).Load();
             
             // TODO: ArticlesArticleViewModel to localize body; just debugging for now
             return View(article);

@@ -1,6 +1,15 @@
 ﻿@model GaspApp.Models.ArticlesViewModels.ArticlesIndexViewModel
+@inject SharedViewLocalizer Localizer
 
-@foreach (var item in Model.Articles)
-{
-	<p>@item.Slug</p>
-}
+<div class="container">
+	<section class="section">
+		<h1 class="title">@Localizer["Articles"]</h1>
+		<hr />
+		@foreach (var item in Model.Articles)
+		{
+			<p>
+				<a href="~/Articles/@item.Slug">@item.Contents.First().Title</a>
+			</p>
+		}
+	</section>
+</div>

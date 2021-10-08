@@ -6,7 +6,16 @@
 	var content = Model!.Contents.First();
 }
 
+<section class="hero is-link">
+	<div class="hero-body">
+		<h1 class="title">@content.Title</h1>
+		<h2 class="subtitle">@Model.Author.DisplayName, @Model.PublishedDate</h2>
+	</div>
+</section>
 <div class="container">
-	<h1>@content.Title</h1>
-	<p>@content.Body</p>
+	<section class="section">
+		<div class="content">
+			@content.Body
+		</div>
+	</section>
 </div>
