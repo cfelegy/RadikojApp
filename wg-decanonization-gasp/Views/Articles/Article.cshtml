@@ -1,0 +1,12 @@
+﻿@model GaspApp.Models.Article
+@inject SharedViewLocalizer Localizer
+
+@{
+	ViewData["Title"] = Localizer["Article"];
+	var content = Model!.Contents.First();
+}
+
+<div class="container">
+	<h1>@content.Title</h1>
+	<p>@content.Body</p>
+</div>
