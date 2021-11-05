@@ -34,7 +34,8 @@ namespace GaspApp.Controllers
             var article = new Article
             {
                 Author = account,
-                Slug = string.Format("new-article-{0}", Guid.NewGuid().ToString())
+                Slug = string.Format("new-article-{0}", Guid.NewGuid().ToString()),
+                Contents = new List<ArticleContent> { new ArticleContent { Culture = "en-US", Title = "new-content", Body = "" } },
             };
             _dbContext.Articles.Add(article);
             await _dbContext.SaveChangesAsync();
@@ -48,6 +49,10 @@ namespace GaspApp.Controllers
             var article = await _dbContext.Articles.FindAsync(id);
             if (article == null)
                 return NotFound();
+
+            await _dbContext.Entry(article).Collection(x => x.Contents).LoadAsync();
+            article.Contents.RemoveAll(x => true);
+
             _dbContext.Articles.Remove(article);
             await _dbContext.SaveChangesAsync();
             return RedirectToAction("Index");
