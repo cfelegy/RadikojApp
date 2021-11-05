@@ -1,51 +1,44 @@
-﻿<div class="container" id="map-container">
+﻿@model GaspApp.Models.HomeViewModels.MapViewModel
+
+<div class="container" id="map-container">
 	<div id="map" class="center"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-geo@3"></script>
-<script src="https://unpkg.com/topojson@3"></script>
-
-<style>
-	svg {
-		background: #eee;
-	}
-
-	.boundary {
-		fill: none;
-		stroke: #fff;
-	}
-</style>
+<script src="https://cdn.plot.ly/plotly-2.4.2.min.js"></script>
 
 <script>
-	var width = 900;
-	var height = 700;
+	var data = [{
+		type: 'choropleth',
+		/*locations: @Model.LocationCodes,
+		text: @Model.LocationNames,
+		z: @Model.Values,*/
+		locations: ['USA', 'GBR', 'JPN'],
+		text: ['United States', 'Great Britain', 'Japan'],
+		z: [10, 15, 13],
+		autocolorscale: true,
+		zmin: 0,
+		showscale: false,
+	}];
 
-	var svg = d3.select("#map").append("svg")
-		.attr("width", width)
-		.attr("height", height);
+	var layout = {
+		geo: {
+			showframe: false,
+			showcoastlines: true,
+			showcountries: true,
+			projection: {
+				type: 'natural earth2',
+				scale: 1,
+			},
+		},
+		margin: {
+			b: 0,
+			l: 0,
+			r: 0,
+			t: 0,
+		},
+		autosize: true,
+		height: 700,
+	};
 
-	var projection = d3.geoEqualEarth()
-		.translate([width / 2, height / 2]);
-	var path = d3.geoPath().projection(projection);
-
-	const g = svg.append('g');
-	
-	d3.json('https://unpkg.com/world-atlas@2.0.2/countries-110m.json')
-		.then(world => {
-			/*g.append('path')
-				.datum({ type: 'Sphere' })
-				.attr('class', 'sphere')
-				.attr('d', path);*/
-
-			g.append('path')
-				.datum(topojson.merge(world, world.objects.countries.geometries))
-				.attr('class', 'land')
-				.attr('d', path);
-
-			g.append('path')
-	            .datum(topojson.mesh(world, world.objects.countries, (a, b) => a !== b))
-				.attr('class', 'boundary')
-				.attr('d', path);
-		});
+	Plotly.newPlot("map", data, layout, {showLink: false, displayModeBar: false, responsive: true});
 </script>
