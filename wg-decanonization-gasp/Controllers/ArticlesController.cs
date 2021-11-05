@@ -1,6 +1,8 @@
 ﻿using GaspApp.Data;
 using GaspApp.Models;
+using GaspApp.Models.ArticlesViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -37,9 +39,25 @@ namespace GaspApp.Controllers
             }
             _dbContext.Entry(article).Collection(x => x.Contents).Load();
             _dbContext.Entry(article).Reference(x => x.Author).Load();
+
+            var cultureFeature = Request.HttpContext.Features.Get<IRequestCultureFeature>();
+            var cultureName = cultureFeature!.RequestCulture.Culture.Name;
+            
+            var viewModel = new ArticlesArticleViewModel
+            {
+                Article = article
+            };
+            ArticleContent? content;
+            if ((content = article.Contents.FirstOrDefault(x => x.Culture == cultureName)) != null)
+                viewModel.Content = content;
+			else
+			{
+                viewModel.Content = article.Contents.First();
+                viewModel.Fallback = true;
+			}
             
             // TODO: ArticlesArticleViewModel to localize body; just debugging for now
-            return View(article);
+            return View(viewModel);
         }
 
         [Authorize]

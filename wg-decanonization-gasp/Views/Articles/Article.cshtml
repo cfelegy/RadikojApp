@@ -1,21 +1,20 @@
-﻿@model GaspApp.Models.Article
+﻿@model GaspApp.Models.ArticlesViewModels.ArticlesArticleViewModel
 @inject SharedViewLocalizer Localizer
 
 @{
 	ViewData["Title"] = Localizer["Article"];
-	var content = Model!.Contents.First();
 }
 
 <section class="hero is-link">
 	<div class="hero-body">
-		<h1 class="title">@content.Title</h1>
-		<h2 class="subtitle">@Model.Author.DisplayName, @Model.PublishedDate</h2>
+		<h1 class="title">@Model.Content.Title</h1>
+		<h2 class="subtitle">@Model.Article.Author.DisplayName, @Model.Article.PublishedDate</h2>
 	</div>
 </section>
 <div class="container">
 	<section class="section">
 		<div class="content">
-			@content.Body
+			@Model.Content.Body
 		</div>
 	</section>
 </div>

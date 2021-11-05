@@ -1,5 +1,10 @@
-﻿@model GaspApp.Models.ArticlesViewModels.ArticlesIndexViewModel
+﻿@using Microsoft.AspNetCore.Localization
+@model GaspApp.Models.ArticlesViewModels.ArticlesIndexViewModel
 @inject SharedViewLocalizer Localizer
+
+@{
+	var cultureName = Context.Features.Get<IRequestCultureFeature>()!.RequestCulture.Culture.Name;
+}
 
 <div class="container">
 	<section class="section">
@@ -8,7 +13,10 @@
 		@foreach (var item in Model.Articles)
 		{
 			<p>
-				<a href="~/Articles/@item.Slug">@item.Contents.First().Title</a>
+				<a href="~/Articles/@item.Slug">
+					@(item.Contents.FirstOrDefault(x => x.Culture == cultureName)?.Title 
+					?? item.Contents.First().Title)
+				</a>
 			</p>
 		}
 	</section>
