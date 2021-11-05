@@ -1,0 +1,29 @@
+1. Provision a new Ubuntu 20.04 VM
+	$ apt update
+	$ apt upgrade
+	$ ufw allow OpenSSH
+	$ ufw enable
+2. Install Postgres and Provision Account
+	$ apt install postgresql postgresql-contrib
+	$ su postgres
+	$ psql
+	create user gasp with password 'gasp';
+	create database gaspdb with owner gasp;
+	\q
+	$ exit
+3. Install ASP.Net Core
+	$ wget https://dot.net/v1/dotnet-install.sh
+	$ chmod +x dotnet-install.sh
+	$ ./dotnet-install.sh -c 6.0
+	$ mv ~/.dotnet /usr/lib/dotnet
+	$ ln -s /usr/lib/dotnet/dotnet /usr/bin/dotnet
+4. Set up environment
+	$ dotnet tool install --global dotnet-ef
+	$ git clone https://github.com/Big-Data-Analytics-Lab-USF/GaspApp
+	$ cd GaspApp
+	$ dotnet restore
+	# edit configuration file
+	$ dotnet run -c Release --urls http://0.0.0.0:80
+
+# export PATH="$PATH:/root/.dotnet/tools"
+# export DOTNET_ROOT=/usr/lib/dotnet/
