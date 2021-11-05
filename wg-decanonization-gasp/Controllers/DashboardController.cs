@@ -156,5 +156,10 @@ namespace GaspApp.Controllers
 			}
             return View(dbCopy);
 		}
+
+        public IActionResult Translations()
+		{
+            return View();
+		}
     }
 }

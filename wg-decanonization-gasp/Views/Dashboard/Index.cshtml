@@ -7,11 +7,11 @@
 			var content = article.Contents.FirstOrDefault(c => c.Culture == locale);
 			if (content != null)
 			{
-				yield return Html.ActionLink("E", "ModifyContent", routeValues: new { articleId = article.Id, contentId = content.Id });
+				yield return Html.ActionLink("✏️", "ModifyContent", routeValues: new { articleId = article.Id, contentId = content.Id });
 			}
 			else
 			{
-				yield return Html.ActionLink("+", "CreateContent", routeValues: new { articleId = article.Id, locale = locale });
+				yield return Html.ActionLink("➕", "CreateContent", routeValues: new { articleId = article.Id, locale = locale });
 			}
 		}
 	}
@@ -56,8 +56,17 @@
 				</table>
 			</div>
 			<div class="column">
-				<h1 class="title is-4">Survey Management</h1>
+				<h1 class="title is-4">Survey Management (in progress)</h1>
 				<hr />
+				
+				<h2 class="subtitle is-5">Future</h2>
+				<p>Week 2 | Edit | Activate</p>
+				
+				<h2 class="subtitle is-5">Ongoing</h2>
+				<p>Week 1</p>
+				
+				<h2 class="subtitle is-5">Completed</h2>
+				<p>Week 0 | View Results | Download CSV</p>
 			</div>
 		</div>
 	</section>

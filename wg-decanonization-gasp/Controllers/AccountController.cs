@@ -1,5 +1,6 @@
 ﻿using GaspApp.Models.AccountViewModels;
 using GaspApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GaspApp.Controllers
@@ -48,6 +49,12 @@ namespace GaspApp.Controllers
 
             return ReturnUrlAction(returnUrl);
         }
+
+        [Authorize]
+        public IActionResult ManageAccess()
+		{
+            return View();
+		}
 
         public IActionResult AddDebugSuperUser()
         {
