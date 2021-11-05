@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Localization
+@using Microsoft.Extensions.Options
+
+@inject SharedViewLocalizer Localizer
+@inject IOptions<RequestLocalizationOptions> Options
+
+@{
+	var returnUrl = string.Concat("~", Context.Request.Path.Value ?? "/");
+	var cultureItems = Options.Value!.SupportedCultures!
+		.ToList();
+	var requestCulture = Context.Features.Get<IRequestCultureFeature>().RequestCulture.Culture;
+}
+
+<div class="navbar-item has-dropdown is-hoverable">
+	<span class="navbar-link">
+		Language 🌐
+	</span>
+	<div class="navbar-dropdown is-right">
+		@foreach (var lang in cultureItems)
+		{
+			<a class="navbar-item" asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@returnUrl" asp-route-culture="@lang.Name">
+				@if(lang.Name == requestCulture.Name)
+				{
+					<b>@lang.NativeName</b>
+				}else{
+					@lang.NativeName
+				}
+			</a>
+		}
+	</div>
+</div>

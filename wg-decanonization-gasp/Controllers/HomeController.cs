@@ -17,7 +17,7 @@ namespace GaspApp.Controllers
             return View();
 		}
 
-        [HttpPost]
+        //[HttpPost]
         public IActionResult SetLanguage(string culture, string returnUrl)
         {
             Response.Cookies.Append(
