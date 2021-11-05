@@ -1,5 +1,8 @@
-﻿namespace GaspApp.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace GaspApp.Models
 {
+    [Index(nameof(Slug), IsUnique = true)]
     public class Article
     {
         public Guid Id {  get; set; }

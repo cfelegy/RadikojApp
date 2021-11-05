@@ -23,7 +23,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
      * - Spanish
      * Are the full locales below correct to match this list? (e.g. Chinese simplified vs traditional, Arabic SA or other...)
      */
-    var supportedCultures = new[] { "en-US", "ar-sa", "zh-Hans", "fr", "ru", "es" };
+    var supportedCultures = LocaleConstants.SUPPORTED_LOCALES;
     options.SetDefaultCulture(supportedCultures[0])
         .AddSupportedCultures(supportedCultures)
         .AddSupportedUICultures(supportedCultures);

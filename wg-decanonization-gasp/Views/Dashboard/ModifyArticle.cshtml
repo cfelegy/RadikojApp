@@ -1,0 +1,24 @@
+﻿@model Article
+@inject SharedViewLocalizer Localizer
+@{
+	ViewData["Title"] = Localizer["Modify Article"];
+}
+
+<div class="container">
+	<div class="section">
+		<h1 class="title">@Localizer["Modify Article"]</h1>
+		<form class="form" asp-action="ModifyArticle">
+			<div asp-validation-summary="All" class="is-danger"></div>
+			<input type="hidden" asp-for="@Model.Id" />
+			<div class="field">
+				<div class="control">
+					<label class="label" asp-for="@Model.Slug">@Localizer["Slug"]</label>
+					<input class="input" asp-for="@Model.Slug" />
+				</div>
+			</div>
+			<div class="control">
+				<button class="button is-success" type="submit">@Localizer["Submit"]</button>
+			</div>
+		</form>
+	</div>
+</div>

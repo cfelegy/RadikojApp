@@ -43,6 +43,7 @@ namespace GaspApp.Controllers
         }
 
         [Authorize]
+        [Route("[controller]/AddDebugArticles")]
         public async Task<IActionResult> AddDebugArticles()
         {
             var account = await _dbContext.Accounts.FindAsync(new Guid(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value));

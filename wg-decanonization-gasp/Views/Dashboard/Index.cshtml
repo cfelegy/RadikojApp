@@ -1,7 +1,64 @@
-﻿<div class="container">
+﻿@model GaspApp.Models.DashboardViewModels.DashboardIndexViewModel
+@{
+	IEnumerable<object> LocaleButtons(Article article)
+	{
+		foreach (var locale in LocaleConstants.SUPPORTED_LOCALES)
+		{
+			var content = article.Contents.FirstOrDefault(c => c.Culture == locale);
+			if (content != null)
+			{
+				yield return Html.ActionLink("E", "ModifyContent", routeValues: new { articleId = article.Id, contentId = content.Id });
+			}
+			else
+			{
+				yield return Html.ActionLink("+", "CreateContent", routeValues: new { articleId = article.Id, locale = locale });
+			}
+		}
+	}
+}
+
+<div class="container">
 	<section class="section">
 		<h1 class="title">Administration Dashboard</h1>
 		<h2 class="subtitle">Manage articles and surveys...</h2>
 		<hr />
+		<div class="columns">
+			<div class="column is-two-thirds">
+				<h1 class="title is-4">Article Management <a class="button is-link is-small" asp-action="CreateArticle">+ Create</a></h1>
+				<hr />
+				<table class="table is-fullwidth">
+					<thead>
+						<tr>
+							<th>Slug</th>
+							<th>EN</th>
+							<th>AR</th>
+							<th>CN</th>
+							<th>FR</th>
+							<th>RU</th>
+							<th>ES</th>
+							<th>Options</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var art in Model.Articles)
+						{
+							var locales = art.Contents.Select(c => c.Culture);
+							<tr>
+								<td><a asp-action="ModifyArticle" asp-route-id="@art.Id">@art.Slug</a></td>
+								@foreach (var button in LocaleButtons(art))
+								{
+									<td>@button</td>
+								}
+								<td><a asp-action="DeleteArticle" asp-route-id="@art.Id" class="button is-danger is-small">Delete</a></td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+			<div class="column">
+				<h1 class="title is-4">Survey Management</h1>
+				<hr />
+			</div>
+		</div>
 	</section>
 </div>
