@@ -61,6 +61,11 @@ namespace GaspApp.Controllers
             _accountService.AddDebugSuperUser();
             return RedirectToAction("SignIn");
         }
+        public IActionResult AddDebugDemoUser()
+        {
+            _accountService.AddDemoUser();
+            return RedirectToAction("SignIn");
+        }
 
         private IActionResult ReturnUrlAction(string? returnUrl)
         {

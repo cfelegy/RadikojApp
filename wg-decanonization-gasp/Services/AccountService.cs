@@ -53,6 +53,19 @@ namespace GaspApp.Services
                 DisplayName = "root"
             };
             _dbContext.Accounts.Add(root);
+
+            _dbContext.SaveChanges();
+        }
+        public void AddDemoUser()
+		{
+            var demo = new Account
+            {
+                Email = "demo@demo",
+                PasswordHash = _passwordHasher.HashPassword(null!, "demo"),
+                DisplayName = "Demo Account"
+            };
+            _dbContext.Accounts.Add(demo);
+
             _dbContext.SaveChanges();
         }
 
