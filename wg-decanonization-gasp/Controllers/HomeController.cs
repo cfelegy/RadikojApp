@@ -12,6 +12,11 @@ namespace GaspApp.Controllers
             return View();
         }
 
+        public IActionResult Map()
+		{
+            return View();
+		}
+
         [HttpPost]
         public IActionResult SetLanguage(string culture, string returnUrl)
         {
