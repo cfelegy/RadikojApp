@@ -1,0 +1,32 @@
+﻿@model List<Account>
+
+<div class="container">
+	<section class="section">
+		<h1 class="title">Manage Access</h1>
+		<h2 class="subtitle">Configure access for translators and collaborators</h2>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Email Address</th>
+					<th>Friendly Name</th>
+					<th>Role</th>
+					<th>Last Logged In</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var account in Model!)
+				{
+					<tr>
+						<td>@account.Email</td>
+						<td>@account.DisplayName</td>
+						<td>(none)</td>
+						<td>(none)</td>
+						<td>no actions</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</section>
+</div>

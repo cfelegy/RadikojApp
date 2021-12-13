@@ -1,4 +1,5 @@
-﻿using GaspApp.Models.AccountViewModels;
+﻿using GaspApp.Data;
+using GaspApp.Models.AccountViewModels;
 using GaspApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,10 +9,12 @@ namespace GaspApp.Controllers
     public class AccountController : Controller
     {
         private readonly AccountService _accountService;
+        private readonly GaspDbContext _dbContext;
 
-        public AccountController(AccountService accountService)
+        public AccountController(AccountService accountService, GaspDbContext dbContext)
         {
             _accountService = accountService;
+            _dbContext = dbContext;
         }
 
         [HttpGet]
@@ -51,9 +54,10 @@ namespace GaspApp.Controllers
         }
 
         [Authorize]
-        public IActionResult ManageAccess()
+        public IActionResult ListAll()
 		{
-            return View();
+            var accounts = _dbContext.Accounts.ToList();
+            return View(accounts);
 		}
 
         public IActionResult AddDebugSuperUser()
