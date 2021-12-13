@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - @Localizer["AppName"]</title>
+	<title>@Localizer[ViewData["Title"]?.ToString() ?? ""] - @Localizer["Antro Radikoj"]</title>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css" />
 	<link rel="stylesheet" href="~/css/style.css" />
 </head>
@@ -13,7 +13,7 @@
 	<nav class="navbar is-info">
 		<div class="navbar-brand">
 			<span class="navbar-item has-text-weight-bold">
-				@Localizer["Global Anthropology Syllabus Project"]
+				@Localizer["Antro Radikoj"]
 			</span>
 		</div>
 		<div class="navbar-menu">
@@ -22,13 +22,13 @@
 					@Localizer["Home"]
 				</a>
 				<a class="navbar-item" href="@Url.Action("Index", "Articles")">
-					@Localizer["Articles"]
+					@Localizer["More"]
 				</a>
 				<a class="navbar-item" href="@Url.Action("Index", "Survey")">
-					@Localizer["Survey"]
+					@Localizer["Participate"]
 				</a>
 				<a class="navbar-item" href="@Url.Action("Map", "Home")">
-					@Localizer["Response Map"]
+					@Localizer["World"]
 				</a>
 			</div>
 			<div class="navbar-end">
@@ -38,7 +38,7 @@
 						⚙️
 					</span>
 					<div class="navbar-dropdown is-right">
-						@if (!User.Identity.IsAuthenticated)
+						@if (!User?.Identity?.IsAuthenticated ?? true)
 						{
 							<a class="navbar-item" href="@Url.Action("SignIn", "Account")">@Localizer["Sign In"]</a>
 						}
