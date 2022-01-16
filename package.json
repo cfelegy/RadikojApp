@@ -1,0 +1,14 @@
+{
+  "name": "wg-decanonization-gasp",
+  "scripts": {
+    "css-build": "node-sass --omit-source-map-url sass/style.scss wg-decanonization-gasp/wwwroot/css/styleb.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Big-Data-Analytics-Lab-USF/GaspApp.git"
+  },
+  "devDependencies": {
+    "bulma": "^0.9.3",
+    "node-sass": "^7.0.1"
+  }
+}

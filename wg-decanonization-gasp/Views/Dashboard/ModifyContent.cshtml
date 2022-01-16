@@ -4,6 +4,9 @@
 	ViewData["Title"] = Localizer["Modify Content"];
 }
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+
 <div class="container">
 	<div class="section">
 		<h1 class="title">@Localizer["Modify Content"]</h1>
@@ -28,3 +31,8 @@
 		</form>
 	</div>
 </div>
+
+<script>
+	var mde = new SimpleMDE({
+	});
+</script>

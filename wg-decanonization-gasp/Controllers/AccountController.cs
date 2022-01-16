@@ -27,6 +27,8 @@ namespace GaspApp.Controllers
 
         public async Task<IActionResult> SignIn(SignInViewModel viewModel, string? returnUrl = "")
         {
+            returnUrl = returnUrl ?? "~/Dashboard";
+
             IActionResult Fail()
             {
                 ViewData["ReturnUrl"] = returnUrl;

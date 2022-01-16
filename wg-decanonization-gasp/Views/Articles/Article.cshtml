@@ -1,5 +1,6 @@
 ﻿@model GaspApp.Models.ArticlesViewModels.ArticlesArticleViewModel
 @inject SharedViewLocalizer Localizer
+@using Humanizer
 
 @{
 	ViewData["Title"] = Localizer["Article"];
@@ -7,14 +8,14 @@
 
 <section class="hero is-link">
 	<div class="hero-body">
-		<h1 class="title">@Model.Content.Title</h1>
-		<h2 class="subtitle">@Model.Article.Author.DisplayName, @Model.Article.PublishedDate</h2>
+		<h1 class="title">@Model!.Content.Title</h1>
+		<h2 class="subtitle">@Localizer["Published"] @Model.Article.PublishedDate.Humanize()</h2>
 	</div>
 </section>
 <div class="container">
 	<section class="section">
 		<div class="content">
-			@Model.Content.Body
+			@GaspApp.Services.MarkdownService.CreateHtmlString(Model.Content.Body)
 		</div>
 	</section>
 </div>

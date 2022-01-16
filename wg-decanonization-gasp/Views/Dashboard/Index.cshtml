@@ -1,5 +1,7 @@
 ﻿@model GaspApp.Models.DashboardViewModels.DashboardIndexViewModel
 @{
+	ViewData["Title"] = "Dashboard";
+
 	IEnumerable<object> LocaleButtons(Article article)
 	{
 		foreach (var locale in LocaleConstants.SUPPORTED_LOCALES)

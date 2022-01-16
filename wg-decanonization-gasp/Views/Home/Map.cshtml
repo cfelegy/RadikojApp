@@ -1,4 +1,9 @@
 ﻿@model GaspApp.Models.HomeViewModels.MapViewModel
+@inject SharedViewLocalizer Localizer
+
+@{
+	ViewData["Title"] = Localizer["Participation"];
+}
 
 <div class="container" id="map-container">
 	<div id="map" class="center"></div>
@@ -13,12 +18,12 @@
 		text: @Model.LocationNames,
 		z: @Model.Values,*/
 		locations: ['USA', 'GBR', 'JPN', 'IRN', 'ETH', 'ECU'],
-		text: ['United States', 'Great Britain', 'Japan', 'Iran', 'Ethiopia', 'Ecuador'],
+		/*text: ['United States', 'Great Britain', 'Japan', 'Iran', 'Ethiopia', 'Ecuador'],*/
 		z: [10, 15, 13, 4, 16, 8],
 		//autocolorscale: true,
 		colorscale: "Earth",
 		zmin: 0,
-		showscale: true,
+		showscale: false,
 	}];
 
 	var layout = {
@@ -29,6 +34,9 @@
 			projection: {
 				type: 'natural earth2',
 				scale: 1,
+				rotation: {
+					lon: 60
+				}
 			},
 		},
 		margin: {
@@ -41,5 +49,5 @@
 		height: 650,
 	};
 
-	Plotly.newPlot("map", data, layout, {showLink: false, displayModeBar: false, responsive: true});
+	Plotly.newPlot("map", data, layout, {showLink: false, displayModeBar: false, responsive: false});
 </script>

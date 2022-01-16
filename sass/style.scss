@@ -1,0 +1,8 @@
+@charset "utf-8";
+
+@import url('https://fonts.googleapis.com/css?family=Merriweather:400,700');
+
+$family-sans-serif: "Merriweather", serif;
+$widescreen-enabled: false;
+
+@import "../node_modules/bulma/bulma.sass";
