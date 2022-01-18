@@ -14,21 +14,6 @@
 <div class="container">
 	<section class="section">
 		<form class="form">
-			@* Meta-questions *@
-			<p class="has-text-weight-bold">You may omit the following section if you wish to remain anonymous:</p>
-			<div class="field has-addons">
-				<div class="control">
-					<span class="select">
-						<select id="countries">
-							<option>Country</option>
-						</select>
-					</span>
-				</div>
-				<div class="control">
-					<input class="input" type="text" placeholder="Name"/>
-				</div>
-			</div>
-
 			@* Survey Questions*@
 
 			@foreach (var item in Model.Items.OrderBy(i => i.Position))
@@ -40,6 +25,38 @@
 				</div>
 			</div>
 			}
+
+			@* Meta-questions *@
+			<hr />
+			<p class="is-small">
+				The following section will help us in analyzing the global impact of our project.
+				<span class="has-text-weight-bold">You may omit these details if you do not wish to be identified.</span>
+			</p>
+			<div class="field">
+				<div class="control">
+					<span class="select is-small">
+						<select id="meta-country">
+							<option value="null">@Localizer["Country"]</option>
+						</select>
+					</span>
+				</div>
+			</div>
+			<div class="field">
+				<label class="label is-small">@Localizer["Email"]</label>
+				<div class="control has-icons-left">
+					<input class="input is-small is-family-code" type="email" id="meta-email" />
+					<span class="icon is-small is-left">
+						<i class="fas fa-envelope"></i>
+					</span>
+				</div>
+			</div>
+			<div class="field">
+				<label class="label is-small">@Localizer["Preferred Name"]</label>
+				<div class="control">
+					<input class="input is-small" type="text" id="meta-name" />
+				</div>
+			</div>
+			<hr />
 			
 			<div class="control">
 				<button class="button is-success" type="submit">@Localizer["Submit"]</button>
@@ -49,7 +66,7 @@
 </div>
 
 <script>
-	const el = document.getElementById("countries");
+	const el = document.getElementById("meta-country");
 	fetch("/js/Countries.json").then(r => r.json()).then(data => {
 		data.forEach(x => {
 			el.appendChild(new Option(x.country, x.abbreviation));
