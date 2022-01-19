@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Localization
 builder.Services.AddLocalization();
 builder.Services.AddSingleton<SharedViewLocalizer>();
+builder.Services.AddSingleton<DbStringLocalizer>();
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     /* TODO: Validate these cultures with the team. UN website lists the current official languages as:

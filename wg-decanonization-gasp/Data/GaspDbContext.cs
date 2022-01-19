@@ -12,5 +12,6 @@ namespace GaspApp.Data
 
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Article> Articles { get; set; }
+        public DbSet<LocalizedItem> LocalizedItems { get; set; }
     }
 }

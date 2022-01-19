@@ -159,7 +159,27 @@ namespace GaspApp.Controllers
 
         public IActionResult Translations()
 		{
-            return View();
+            var translations = _dbContext.LocalizedItems.ToList().GroupBy(i => i.Key).Select(
+                x =>
+                {
+                    // TODO: this is crap
+                    return new TranslationsLocalizedItem
+                    {
+                        Key = x.Key,
+                        English = x.FirstOrDefault(x => x.CultureCode == "en")?.Text ?? "<ERR>",
+                        Arabic = x.FirstOrDefault(x => x.CultureCode == "ar")?.Text ?? "<ERR>",
+                        Chinese = x.FirstOrDefault(x => x.CultureCode == "zh")?.Text ?? "<ERR>",
+                        French = x.FirstOrDefault(x => x.CultureCode == "fr")?.Text ?? "<ERR>",
+                        Russian = x.FirstOrDefault(x => x.CultureCode == "ru")?.Text ?? "<ERR>",
+                        Spanish = x.FirstOrDefault(x => x.CultureCode == "es")?.Text ?? "<ERR>",
+                    };
+                }
+            );
+            var model = new TranslationsViewModel
+            {
+                Items = translations.ToList(),
+            };
+            return View(model);
 		}
     }
 }

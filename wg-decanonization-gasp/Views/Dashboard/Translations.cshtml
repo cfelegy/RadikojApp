@@ -1,6 +1,42 @@
-﻿<div class="container">
+﻿@model GaspApp.Models.DashboardViewModels.TranslationsViewModel
+
+@{
+	ViewData["Title"] = "Translations";
+}
+
+<div class="container">
 	<section class="section">
 		<h1 class="title">Translations</h1>
 		<h2 class="subtitle">Manage site translations</h2>
 	</section>
 </div>
+<table class="table is-fullwidth">
+	<thead>
+		<th>Key</th>
+		<th>English</th>
+		<th>Arabic</th>
+		<th>Chinese</th>
+		<th>French</th>
+		<th>Russian</th>
+		<th>Spanish</th>
+		<th>Options</th>
+	</thead>
+	<tbody>
+		@foreach (var item in Model!.Items)
+		{
+			<tr>
+				<td>@item.Key</td>
+				<td><input type="text" class="input is-small en" value="@item.English" /></td>
+				<td><input type="text" class="input is-small ar" value="@item.Arabic" /></td>
+				<td><input type="text" class="input is-small cn" value="@item.Chinese" /></td>
+				<td><input type="text" class="input is-small fr" value="@item.French" /></td>
+				<td><input type="text" class="input is-small ru" value="@item.Russian" /></td>
+				<td><input type="text" class="input is-small es" value="@item.Spanish" /></td>
+				<td class="field is-grouped">
+					<button class="button is-small is-success is-light">Save</button>
+					<button class="button is-small is-warning is-light">Auto</button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

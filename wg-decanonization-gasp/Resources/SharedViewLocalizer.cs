@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using GaspApp.Services;
+using Microsoft.Extensions.Localization;
 
 namespace GaspApp
 {
@@ -6,10 +7,13 @@ namespace GaspApp
     {
         private readonly IStringLocalizer _localizer;
 
-        public SharedViewLocalizer(IStringLocalizerFactory factory)
+        /*public SharedViewLocalizer(IStringLocalizerFactory factory)
         {
             _localizer = factory.Create(typeof(LocalizationData));
-        }
+        }*/
+
+        public SharedViewLocalizer(DbStringLocalizer localizer)
+            => _localizer = localizer;
 
         public LocalizedString this[string key] => _localizer[key];
     }
