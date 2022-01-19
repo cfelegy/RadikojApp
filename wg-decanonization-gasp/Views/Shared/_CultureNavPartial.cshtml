@@ -7,13 +7,13 @@
 @{
 	var returnUrl = string.Concat("~", Context.Request.Path.Value ?? "/");
 	var cultureItems = Options.Value!.SupportedCultures!
-		.OrderBy(c => c.NativeName)
+		.OrderBy(c => c.DisplayName)
 		.ToList();
 	var requestCulture = Context.Features.Get<IRequestCultureFeature>()!.RequestCulture.Culture;
 }
 
 <div class="navbar-item has-dropdown is-hoverable">
-	<span class="navbar-link">
+	<span class="navbar-link icon-text">
 		Language 🌐
 	</span>
 	<div class="navbar-dropdown is-right">
