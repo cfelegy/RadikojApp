@@ -8,7 +8,7 @@
 <section class="hero is-small is-primary">
 	<div class="hero-body">
 		<h1 class="title">@Localizer["Survey"]</h1>
-		<h2 class="subtitle">Week 0: @Model!.Id</h2>
+		<h2 class="subtitle">(Temporary Survey ID in place of title @Model!.Id)</h2>
 	</div>
 </section>
 <div class="container">
@@ -29,8 +29,8 @@
 			@* Meta-questions *@
 			<hr />
 			<p class="is-small">
-				The following section will help us in analyzing the global impact of our project.
-				<span class="has-text-weight-bold">You may omit these details if you do not wish to be identified.</span>
+				@Localizer["The following section will help us in analyzing the global impact of our project."]
+				<span class="has-text-weight-bold">@Localizer["You may omit these details if you do not wish to be identified."]</span>
 			</p>
 			<div class="field">
 				<div class="control">

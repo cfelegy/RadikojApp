@@ -3,12 +3,15 @@
 @inject SharedViewLocalizer Localizer
 
 @{
+	ViewData["Title"] = Localizer["More"];
+
 	var cultureName = Context.Features.Get<IRequestCultureFeature>()!.RequestCulture.Culture.Name;
 }
 
 <div class="container">
 	<section class="section">
-		<h1 class="title">@Localizer["Articles"]</h1>
+		<h1 class="title">@Localizer["More"]</h1>
+		<h1 class="subtitle">@Localizer["Articles and announcements from the team"]</h1>
 		<hr />
 		@foreach (var item in Model.Articles)
 		{

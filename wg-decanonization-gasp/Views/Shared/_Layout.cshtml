@@ -45,7 +45,7 @@
 						}
 						else
 						{
-							<span class="navbar-item has-text-weight-bold">Signed in as @User.Identity.Name</span>
+							<span class="navbar-item has-text-weight-bold">@Localizer["Signed in as"] @User.Identity.Name</span>
 							<a class="navbar-item" href="@Url.Action("Index", "Dashboard")">@Localizer["Dashboard"]</a>
 							<a class="navbar-item" href="@Url.Action("Translations", "Dashboard")">@Localizer["Translations"]</a>
 							<a class="navbar-item" href="@Url.Action("ListAll", "Account")">@Localizer["Manage Access"]</a>
