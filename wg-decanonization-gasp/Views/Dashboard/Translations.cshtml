@@ -25,18 +25,53 @@
 		@foreach (var item in Model!.Items)
 		{
 			<tr>
-				<td>@item.Key</td>
-				<td><input type="text" class="input is-small en" value="@item.English" /></td>
-				<td><input type="text" class="input is-small ar" value="@item.Arabic" /></td>
-				<td><input type="text" class="input is-small cn" value="@item.Chinese" /></td>
-				<td><input type="text" class="input is-small fr" value="@item.French" /></td>
-				<td><input type="text" class="input is-small ru" value="@item.Russian" /></td>
-				<td><input type="text" class="input is-small es" value="@item.Spanish" /></td>
+				<td class="key">@item.Key</td>
+				@foreach (var cul in LocaleConstants.SUPPORTED_LOCALES_TWOLETTERS)
+				{
+					<td><input type="text" class="input is-small @cul" value="@item.Values[cul]" /></td>
+				}
 				<td class="field is-grouped">
-					<button class="button is-small is-success is-light">Save</button>
-					<button class="button is-small is-warning is-light">Auto</button>
+					<button class="button is-small is-success is-light" onclick="st(this)">Save</button>
+					<button class="button is-small is-warning is-light" onclick="st(this)">Auto</button>
 				</td>
 			</tr>
 		}
 	</tbody>
 </table>
+
+<script>
+	function st(element) {
+		let auto = element.innerText === 'Auto';
+
+		let path = auto ? "/Dashboard/AutoTranslation" : "/Dashboard/ModifyTranslation";
+		let row = element.parentNode.parentNode;
+		let key = row.querySelector('.key').innerText;
+		let obj = {
+			'key': key,
+			'values': {}
+		};
+
+		for (x of ['en', 'ar', 'zh', 'fr', 'ru', 'es']) {
+			obj['values'][x] = row.querySelector('.'+x).value;
+		}
+
+		let s = fetch(path, {
+			method: 'POST',
+			body: JSON.stringify(obj),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+		s.then(function (response) {
+			return response.json();
+		}).then(function(data) {
+			console.log(data);
+			for (k in data['values']) {
+				let v = data['values'][k]
+				row.querySelector('.'+k).value = v;
+			}
+		}).catch(function(err) {
+			console.log(err);
+		});
+	}
+</script>

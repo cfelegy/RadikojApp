@@ -1,14 +1,13 @@
-﻿namespace GaspApp.Models.DashboardViewModels
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
+
+namespace GaspApp.Models.DashboardViewModels
 {
     public class TranslationsLocalizedItem
     {
         public string Key { get; set; }
-        public string English { get; set; }
-        public string Arabic { get; set; }
-        public string Chinese { get; set; }
-        public string French { get; set; }
-        public string Russian { get; set; }
-        public string Spanish { get; set; }
+        // <two letter culture code, value>
+        public Dictionary<string, string> Values { get; set; }
     }
 }
 

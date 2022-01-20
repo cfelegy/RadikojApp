@@ -5,6 +5,7 @@ using GaspApp.Data;
 using GaspApp.Models.DashboardViewModels;
 using GaspApp.Models;
 using System.Security.Claims;
+using GaspApp.Services;
 
 namespace GaspApp.Controllers
 {
@@ -12,10 +13,12 @@ namespace GaspApp.Controllers
     public class DashboardController : Controller
     {
         private GaspDbContext _dbContext;
+        private AzureTranslationService _translationService;
 
-        public DashboardController(GaspDbContext dbContext)
+        public DashboardController(GaspDbContext dbContext, AzureTranslationService translationService)
         {
             _dbContext = dbContext;
+            _translationService = translationService;
         }
 
         public IActionResult Index()
@@ -162,16 +165,10 @@ namespace GaspApp.Controllers
             var translations = _dbContext.LocalizedItems.ToList().GroupBy(i => i.Key).Select(
                 x =>
                 {
-                    // TODO: this is crap
                     return new TranslationsLocalizedItem
                     {
                         Key = x.Key,
-                        English = x.FirstOrDefault(x => x.CultureCode == "en")?.Text ?? "<ERR>",
-                        Arabic = x.FirstOrDefault(x => x.CultureCode == "ar")?.Text ?? "<ERR>",
-                        Chinese = x.FirstOrDefault(x => x.CultureCode == "zh")?.Text ?? "<ERR>",
-                        French = x.FirstOrDefault(x => x.CultureCode == "fr")?.Text ?? "<ERR>",
-                        Russian = x.FirstOrDefault(x => x.CultureCode == "ru")?.Text ?? "<ERR>",
-                        Spanish = x.FirstOrDefault(x => x.CultureCode == "es")?.Text ?? "<ERR>",
+                        Values = x.ToDictionary(k => k.CultureCode, v => v.Text)
                     };
                 }
             );
@@ -181,5 +178,48 @@ namespace GaspApp.Controllers
             };
             return View(model);
 		}
+
+        public IActionResult ModifyTranslation([FromBody] TranslationsLocalizedItem model)
+        {
+            return Json(ModifyTranslationInternal(model));
+        }
+
+        public async Task<IActionResult> AutoTranslation([FromBody] TranslationsLocalizedItem model)
+        {
+            var key = model.Key;
+            var english = model.Values["en"];
+            var translation = await _translationService.TranslateStringAsync(english);
+
+            var localizedItem = new TranslationsLocalizedItem
+            {
+                Key = key,
+                Values = new Dictionary<string, string>()
+            };
+            localizedItem.Values["en"] = english;
+            foreach (var translatedItem in translation.Translations)
+                localizedItem.Values[translatedItem.To] = translatedItem.Text;
+            localizedItem.Values["zh"] = localizedItem.Values["zh-Hans"];
+            localizedItem.Values.Remove("zh-Hans");
+
+            return Json(ModifyTranslationInternal(localizedItem));
+        }
+
+        private TranslationsLocalizedItem ModifyTranslationInternal(TranslationsLocalizedItem model)
+        {
+            var items = _dbContext.LocalizedItems.Where(x => x.Key == model.Key);
+            foreach (var item in items)
+            {
+                if (item.Text != model.Values[item.CultureCode])
+                    item.Text = model.Values[item.CultureCode];
+            }
+            _dbContext.SaveChanges();
+
+            // rebuild model based on database
+            return new TranslationsLocalizedItem
+            {
+                Key = items.First().Key,
+                Values = items.ToDictionary(k => k.CultureCode, v => v.Text)
+            };
+        }
     }
 }

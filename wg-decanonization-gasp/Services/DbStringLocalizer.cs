@@ -8,13 +8,10 @@ namespace GaspApp.Services
     public class DbStringLocalizer : IStringLocalizer
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly string[] _cultureCodes;
 
         public DbStringLocalizer(IServiceScopeFactory serviceScopeFactory)
         {
             _serviceScopeFactory = serviceScopeFactory;
-            _cultureCodes = LocaleConstants.SUPPORTED_LOCALES.Select(x => new CultureInfo(x)).Select(x => x.TwoLetterISOLanguageName).ToArray();
-            
         }
 
         public LocalizedString this[string name] => GetLocalizedString(name);
@@ -44,7 +41,7 @@ namespace GaspApp.Services
 
         public void CreateTranslationSet(GaspDbContext db, string key)
         {
-            foreach (var cul in _cultureCodes)
+            foreach (var cul in LocaleConstants.SUPPORTED_LOCALES_TWOLETTERS)
             {
                 db.LocalizedItems.Add(new LocalizedItem
                 {
