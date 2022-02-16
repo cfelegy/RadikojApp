@@ -24,9 +24,11 @@ namespace GaspApp.Controllers
         public IActionResult Index()
         {
             var articles = _dbContext.Articles.Include(x => x.Contents).ToList();
+            var surveys = _dbContext.Surveys.ToList();
             var model = new DashboardIndexViewModel
             {
                 Articles = articles,
+                Surveys = surveys,
             };
             return View(model);
         }
@@ -159,6 +161,60 @@ namespace GaspApp.Controllers
 			}
             return View(dbCopy);
 		}
+
+        public async Task<IActionResult> CreateSurvey()
+        {
+            var account = await _dbContext.Accounts.FindAsync(new Guid(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value));
+            var article = new Article
+            {
+                Author = account,
+                Slug = string.Format("new-article-{0}", Guid.NewGuid().ToString()),
+                Contents = new List<ArticleContent> { new ArticleContent { Culture = "en-US", Title = "new-content", Body = "" } },
+            };
+            _dbContext.Articles.Add(article);
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToAction("ModifyArticle", routeValues: new { id = article.Id });
+        }
+
+        public async Task<IActionResult> DeleteSurvey(Guid id)
+        {
+            // TODO: double-check with user
+            var survey = await _dbContext.Surveys.FindAsync(id);
+            if (survey == null)
+                return NotFound();
+
+            _dbContext.Surveys.Remove(survey);
+            await _dbContext.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> ModifySurvey(Guid id)
+        {
+            var survey = await _dbContext.Surveys.FindAsync(id);
+            if (survey == null)
+                return NotFound();
+            await _dbContext.Entry(survey).Collection(x => x.Items).LoadAsync();
+
+            return View(survey);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ModifySurvey(Guid id, Survey survey)
+        {
+            if (id != survey.Id)
+                return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                _dbContext.Update(survey);
+
+                await _dbContext.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(survey);
+        }
 
         public IActionResult Translations()
 		{
