@@ -10,6 +10,15 @@
 		.OrderBy(c => c.DisplayName)
 		.ToList();
 	var requestCulture = Context.Features.Get<IRequestCultureFeature>()!.RequestCulture.Culture;
+
+	string SentenceCase(string source)
+	{
+		if (string.IsNullOrEmpty(source))
+			return source;
+		char[] letters = source.ToCharArray();
+		letters[0] = char.ToUpper(letters[0]);
+		return new string(letters);
+	}
 }
 
 <div class="navbar-item has-dropdown is-hoverable">
@@ -22,9 +31,9 @@
 			<a class="navbar-item" asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@returnUrl" asp-route-culture="@lang.Name">
 				@if(lang.Name == requestCulture.Name)
 				{
-					<b>@lang.NativeName</b>
+					<b>@SentenceCase(lang.NativeName)</b>
 				}else{
-					@lang.NativeName
+					@SentenceCase(lang.NativeName)
 				}
 			</a>
 		}
