@@ -164,17 +164,16 @@ namespace GaspApp.Controllers
 
         public async Task<IActionResult> CreateSurvey()
         {
-            var account = await _dbContext.Accounts.FindAsync(new Guid(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value));
-            var article = new Article
+            var survey = new Survey
             {
-                Author = account,
-                Slug = string.Format("new-article-{0}", Guid.NewGuid().ToString()),
-                Contents = new List<ArticleContent> { new ArticleContent { Culture = "en-US", Title = "new-content", Body = "" } },
+                Id = Guid.NewGuid(),
+                Description = string.Empty,
+                Items = new List<SurveyItem>()
             };
-            _dbContext.Articles.Add(article);
+            _dbContext.Surveys.Add(survey);
             await _dbContext.SaveChangesAsync();
 
-            return RedirectToAction("ModifyArticle", routeValues: new { id = article.Id });
+            return RedirectToAction("ModifySurvey", routeValues: new { id = survey.Id });
         }
 
         public async Task<IActionResult> DeleteSurvey(Guid id)

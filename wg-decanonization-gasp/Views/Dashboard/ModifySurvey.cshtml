@@ -1,5 +1,26 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Survey
+@inject SharedViewLocalizer Localizer
 @{
+	ViewData["Title"] = Localizer["Modify Survey"];
 }
+
+<div class="container">
+	<div class="section">
+		<h1 class="title">@Localizer["Modify Survey"]</h1>
+		<form class="form" asp-action="ModifySurvey">
+			<div asp-validation-summary="All" class="is-danger"></div>
+			<input type="hidden" asp-for="@Model.Id" />
+
+			<div class="field">
+				<label class="label" asp-for="@Model.Description">@Localizer["Description"]</label>
+				<div class="control">
+					<input class="input" type="text" asp-for="@Model.Description" />
+				</div>
+			</div>
+			
+			<div class="control">
+				<button class="button is-success" type="submit">@Localizer["Submit"]</button>
+			</div>
+		</form>
+	</div>
+</div>
