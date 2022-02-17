@@ -1,4 +1,4 @@
-﻿namespace GaspApp.Models.HomeViewModels
+﻿namespace GaspApp.Models.ParticipateViewModels
 {
 	public class MapViewModel
 	{

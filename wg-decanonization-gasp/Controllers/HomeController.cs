@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using GaspApp.Models;
 using Microsoft.AspNetCore.Localization;
-using GaspApp.Models.HomeViewModels;
 
 namespace GaspApp.Controllers
 {
@@ -12,17 +11,6 @@ namespace GaspApp.Controllers
         {
             return View();
         }
-
-        public IActionResult Map()
-		{
-            var viewModel = new MapViewModel
-            {
-                LocationCodes = "['USA', 'GBR']",
-                LocationNames = "['United States', 'United Kingdom']",
-                Values = "[10, 15]"
-            };
-            return View(viewModel);
-		}
 
         //[HttpPost]
         public IActionResult SetLanguage(string culture, string returnUrl)

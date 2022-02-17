@@ -8,7 +8,7 @@
 <section class="hero is-small is-primary">
 	<div class="hero-body">
 		<h1 class="title">@Localizer["Survey"]</h1>
-		<h2 class="subtitle">(Temporary Survey ID in place of title @Model!.Id)</h2>
+		<h2 class="subtitle">@Model.Description</h2>
 	</div>
 </section>
 <div class="container">
@@ -18,12 +18,51 @@
 
 			@foreach (var item in Model.Items.OrderBy(i => i.Position))
 			{
-				<div class="field">
-				<label class="label">@item.Label</label>
-				<div class="control">
-					<input class="input" type="text" id="@item.Name" required />
-				</div>
-			</div>
+				@switch (item.ItemType)
+				{
+					@case SurveyItemType.FreeResponse:
+						<div class="field">
+							<label class="label">@item.Label</label>
+							<div class="control">
+								<input class="input" type="text" id="@item.Name" required />
+							</div>
+						</div>
+						break;
+					@case SurveyItemType.SingleChoice:
+						<div class="field">
+							<label class="label">
+								@item.Label
+							</label>
+							<div class="control">
+							@foreach (var option in item.ParseContents())
+							{
+								<label class="radio">
+									<input type="radio" name="@item.Name" required>
+									@option
+								</label>
+								<br />
+							}
+							</div>
+						</div>
+						break;
+					@case SurveyItemType.MultiChoice:
+						<div class="field">
+							<label class="label">
+								@item.Label
+							</label>
+							<div class="control">
+							@foreach (var option in item.ParseContents())
+							{
+								<label class="checkbox">
+									<input type="checkbox" name="@item.Name" required>
+									@option
+								</label>
+								<br />
+							}
+							</div>
+						</div>
+						break;
+				}
 			}
 
 			@* Meta-questions *@
@@ -62,7 +101,9 @@
 			<hr />
 			
 			<div class="control">
-				<button class="button is-success" type="submit">@Localizer["Submit"]</button>
+				<button class="button is-success" type="submit" name="route" value="another" disabled title="@Localizer["No more surveys to answer"]">@Localizer["Submit and Answer Another"]</button>
+				<button class="button is-success" type="submit" name="route" value="results">@Localizer["Submit and View Results"]</button>
+				<a class="button is-warning" href="~/Participate/Results">@Localizer["View Results"]</a>
 			</div>
 		</form>
 	</section>
