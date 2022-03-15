@@ -1,11 +1,20 @@
-﻿using GaspApp.Models;
+﻿using GaspApp.Data;
+using GaspApp.Models;
 using GaspApp.Models.ParticipateViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace GaspApp.Controllers
 {
     public class ParticipateController : Controller
     {
+        private GaspDbContext _dbContext;
+
+        public ParticipateController(GaspDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
         public IActionResult Index(Guid? id = null)
         {
             var model = new Survey
@@ -39,6 +48,38 @@ namespace GaspApp.Controllers
                 }
             };
             return View(model);
+        }
+
+        public IActionResult SubmitResult([FromForm] IFormCollection form)
+        {
+            // Flatten form to a dictionary
+            var kv = new Dictionary<string, string>();
+            foreach (var (k, v) in form)
+            {
+                kv[k] = v.ToString(); // TODO: join multi-values using ;;
+            }
+            var json = JsonConvert.SerializeObject(kv);
+
+            var surveyId = kv["meta-survey-id"];
+            var survey = _dbContext.Surveys.Find(Guid.Parse(surveyId));
+            if (survey == null)
+                return NotFound();
+
+            var response = new SurveyResponse
+            {
+                Id = Guid.NewGuid(),
+                Survey = survey,
+                Country = kv["meta-country"],
+                ResponseJson = json
+            };
+            _dbContext.SurveyResponses.Add(response);
+            _dbContext.SaveChanges();
+
+            if (kv["route"] == "another")
+            {
+                /* TODO another */
+            }
+            return RedirectToAction("Results", routeValues: new { id = survey.Id });
         }
 
         public IActionResult Map()

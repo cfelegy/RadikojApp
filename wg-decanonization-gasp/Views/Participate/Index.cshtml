@@ -13,9 +13,9 @@
 </section>
 <div class="container">
 	<section class="section">
-		<form class="form">
+		<form class="form" action="/Participate/SubmitResult" method="POST">
 			@* Survey Questions*@
-
+			<input type="hidden" name="meta-survey-id" value="@Model.Id" />
 			@foreach (var item in Model.Items.OrderBy(i => i.Position))
 			{
 				@switch (item.ItemType)
@@ -37,7 +37,7 @@
 							@foreach (var option in item.ParseContents())
 							{
 								<label class="radio">
-									<input type="radio" name="@item.Name" required>
+									<input type="radio" name="@item.Name" value="@option" /> @* TODO: make first one required *@
 									@option
 								</label>
 								<br />
@@ -54,7 +54,7 @@
 							@foreach (var option in item.ParseContents())
 							{
 								<label class="checkbox">
-									<input type="checkbox" name="@item.Name" required>
+									<input type="checkbox" name="@item.Name" value="@option"> @* TODO: make first one required *@
 									@option
 								</label>
 								<br />
@@ -74,7 +74,7 @@
 			<div class="field">
 				<div class="control">
 					<span class="select is-small">
-						<select name="meta-country">
+						<select name="meta-country" id="meta-country">
 							<option value="null">@Localizer["Where do you teach?"]</option>
 						</select>
 					</span>
