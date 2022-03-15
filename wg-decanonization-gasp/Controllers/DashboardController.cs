@@ -199,11 +199,21 @@ namespace GaspApp.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ModifySurvey(Guid id, Survey survey)
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> ModifySurvey(Guid id, [FromForm] IFormCollection form)
         {
+            var survey = new Survey();
+            survey.Id = Guid.Parse(form["Id"].Single());
             if (id != survey.Id)
                 return NotFound();
+
+            survey.Description = form["Description"].Single();
+
+            if (form.TryGetValue("ActivateDate", out var activateDate))
+                survey.ActivateDate = DateTimeOffset.Parse(activateDate.Single());
+            if (form.TryGetValue("DeactivateDate", out var deactivateDate))
+                survey.DeactivateDate = DateTimeOffset.Parse(deactivateDate.Single());
+
 
             if (ModelState.IsValid)
             {

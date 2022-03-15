@@ -1,7 +1,9 @@
-﻿@model Survey
+﻿@using Newtonsoft.Json
+@model Survey
 @inject SharedViewLocalizer Localizer
 @{
 	ViewData["Title"] = Localizer["Modify Survey"];
+	var itemJson = JsonConvert.SerializeObject(Model.Items);
 }
 
 <div class="container">
@@ -17,6 +19,40 @@
 					<input class="input" type="text" asp-for="@Model.Description" />
 				</div>
 			</div>
+
+			<pre>
+				@itemJson
+			</pre>
+
+			<div class="box" id="entry-template" hidden>
+				<div class="field">
+					<label class="label is-small">Identification name (for data storage)</label>
+					<input class="input is-small" type="text" name="si/guid/name" placeholder="name" />
+				</div>
+				<div class="field">
+					<label class="label is-small">Response label (question)</label>
+					<input class="input is-small" type="text" name="si/guid/label" placeholder="label" />
+				</div>
+				<div class="field">
+					<label class="label is-small">Response type</label>
+					<span class="select is-small">
+						<select name="si/guid/type">
+							<option value="FreeResponse">Free response</option>
+							<option value="SingleChoice">Select one</option>
+							<option value="MultiChoice">Select many</option>
+						</select>
+					</span>
+				</div>
+				<div class="field">
+					<label class="label is-small">Contents</label>
+					<input class="input is-small" type="text" name="si/guid/contents" placeholder="contents" />
+				</div>
+				<div class="field">
+					<label class="label is-small">Position</label>
+					<input class="input is-small" type="number" name="si/guid/position" placeholder="position" />
+				</div>
+			</div>
+
 			
 			<div class="control">
 				<button class="button is-success" type="submit">@Localizer["Submit"]</button>

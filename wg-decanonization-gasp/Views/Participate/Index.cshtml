@@ -24,7 +24,7 @@
 						<div class="field">
 							<label class="label">@item.Label</label>
 							<div class="control">
-								<input class="input" type="text" id="@item.Name" required />
+								<input class="input" type="text" name="@item.Name" required />
 							</div>
 						</div>
 						break;
@@ -74,7 +74,7 @@
 			<div class="field">
 				<div class="control">
 					<span class="select is-small">
-						<select id="meta-country">
+						<select name="meta-country">
 							<option value="null">@Localizer["Where do you teach?"]</option>
 						</select>
 					</span>
@@ -83,7 +83,7 @@
 			<div class="field">
 				<label class="label is-small">@Localizer["What is your Email?"]</label>
 				<div class="control has-icons-left">
-					<input class="input is-small is-family-code" type="email" id="meta-email" />
+					<input class="input is-small is-family-code" type="email" name="meta-email" />
 					<span class="icon is-small is-left">
 						<i class="fas fa-envelope"></i>
 					</span>
@@ -92,7 +92,7 @@
 			<div class="field">
 				<label class="label is-small">@Localizer["Your preferred name?"]</label>
 				<div class="control has-icons-left">
-					<input class="input is-small" type="text" id="meta-name" />
+					<input class="input is-small" type="text" name="meta-name" />
 					<span class="icon is-small is-left">
 						<i class="fas fa-users"></i>
 					</span>
