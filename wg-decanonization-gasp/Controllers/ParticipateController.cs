@@ -42,7 +42,7 @@ namespace GaspApp.Controllers
             var kv = new Dictionary<string, string>();
             foreach (var (k, v) in form)
             {
-                kv[k] = v.ToString(); // TODO: join multi-values using ;;
+                kv[k] = string.Join(";;", v);
             }
             var json = JsonConvert.SerializeObject(kv);
 
@@ -79,9 +79,58 @@ namespace GaspApp.Controllers
             return View(viewModel);
         }
 
-        public IActionResult Results(Guid? id = null)
+        public async Task<IActionResult> Results(Guid? id)
         {
-            return View();
+            var survey = await _dbContext.Surveys.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == id);
+            if (survey == null)
+                return NotFound();
+            var results = await _dbContext.SurveyResponses.Where(x => x.Survey == survey).ToListAsync();
+            
+            var model = new ResultsViewModel();
+            model.Survey = survey;
+            model.TotalResponses = results.Count;
+            model.UniqueCountries = results.DistinctBy(x => x.Country).Count();
+            model.Questions = new List<QuestionResult>();
+            foreach (var item in survey.Items.OrderBy(x => x.Position))
+            {
+                var questionResult = new QuestionResult
+                {
+                    Label = item.Label,
+                    Position = item.Position,
+                    IsFreeResponse = item.ItemType == SurveyItemType.FreeResponse,
+                };
+
+                if (questionResult.IsFreeResponse)
+                {
+                    questionResult.FreeResponses = new List<FreeResponseAnswer>();
+                    foreach (var result in results)
+                    {
+                        var freeResponseAnswer = new FreeResponseAnswer
+                        {
+                            OriginalText = result.Response.Value<string>(item.Name)!,
+                            // TODO: TranslatedText
+                        };
+                        questionResult.FreeResponses.Add(freeResponseAnswer);
+                    }
+                }
+                else
+                {
+                    questionResult.FixedResponses = new Dictionary<string, int>();
+                    var keys = item.ParseContents();
+                    foreach (var key in keys)
+                        questionResult.FixedResponses[key] = 0;
+                    foreach (var result in results)
+                    {
+                        var selections = result.Response.Value<string>(item.Name)!.Split(";;");
+                        foreach (var selection in selections)
+                            questionResult.FixedResponses[selection] += 1;
+                    }
+                }
+
+                model.Questions.Add(questionResult);
+            }
+            
+            return View(model);
         }
     }
 }

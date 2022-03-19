@@ -60,7 +60,7 @@
 			<h1 class="title is-4">Survey Management <a class="button is-link is-small" asp-action="CreateSurvey">+ Create</a></h1>
 			<table class="table is-fullwidth">
 				<thead>
-					<th>ID</th>
+					<th>Description</th>
 					<th>Is Active?</th>
 					<th>Options</th>
 				</thead>
@@ -68,7 +68,7 @@
 				@foreach (var srv in Model.Surveys)
 				{
 					<tr>
-						<td>@srv.Id</td>
+						<td>@srv.Description</td>
 						<td>@srv.IsActive()</td>
 						<td>
 							<a asp-action="ModifySurvey" asp-route-id="@srv.Id" class="button is-primary is-small">Modify</a>

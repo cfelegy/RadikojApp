@@ -1,4 +1,5 @@
-﻿@inject SharedViewLocalizer Localizer    
+﻿@model GaspApp.Models.ParticipateViewModels.ResultsViewModel
+@inject SharedViewLocalizer Localizer    
 @{
 	ViewData["Title"] = Localizer["Results"];
 }
@@ -6,85 +7,55 @@
 <section class="hero is-small is-primary">
 	<div class="hero-body">
 		<h1 class="title">@Localizer["Survey Results"]</h1>
-		<h2 class="subtitle">Survey for week 1 of the project</h2>
+		<h2 class="subtitle">@Model.Survey.Description</h2>
 	</div>
 </section>
 <section class="section">
-	<h2 class="subtitle is-6">This survey received <span class="has-text-weight-bold">1,234</span> responses from <span class="has-text-weight-bold">10</span> countries.</h2>
+	<h2 class="subtitle is-6">This survey received <span class="has-text-weight-bold">@Model.TotalResponses</span> responses from <span class="has-text-weight-bold">@Model.UniqueCountries</span> countries.</h2>
 
-	<div class="box">
-		<h2 class="is-size-5">Question 1 asked <small>do you do this, that, or something else?</small></h2>
-		<table class="table is-fullwidth">
-			<tr>
-				<td>This</td>
-				<td>700</td>
-				<td><progress class="progress" value="700" max="1234"></progress></td>
-			</tr>
-			<tr>
-				<td>That</td>
-				<td>300</td>
-				<td><progress class="progress" value="300" max="1234"></progress></td>
-			</tr>
-			<tr>
-				<td>Something else</td>
-				<td>234</td>
-				<td><progress class="progress" value="234" max="1234"></progress></td>
-			</tr>
-		</table>
-	</div>
-
-	<div class="box">
-		<h2 class="is-size-5">Question 2 asked <small>what is your favorite thing to do?</small></h2>
-		<p>This was a free-response question. Responses said:</p>
-		<div class="content">
-			<ul>
-				<li>
-					My favorite thing is a book.
-					<div class="dropdown is-hoverable">
-						<div class="dropdown-trigger">
-								@*<button class="button is-small">
-									<span>Hover for translation</span>
-									<span class="icon is-small">
-									<i class="fas fa-angle-down"></i>
-									</span>
-									</button>*@
-							<span class="tag is-dark">Original Text <span class="icon is-small"><i class="fas fa-angle-down"></i></span></span>
-						</div>
-						<div class="dropdown-menu">
-							<div class="dropdown-content">
-								<div class="dropdown-item">
-									(Here the translation of 'My favorite thing is a book.' in the user's native language will display. This message isn't localized since this is a mock-up.)
+	@foreach(var question in Model.Questions)
+	{
+		<div class="box">
+			<h2 class="is-size-5">Question @question.Position asked <small>@question.Label</small></h2>
+			@if (question.IsFreeResponse)
+			{
+				<p>This was a free-response question. Responses said:</p>
+				<div class="content">
+					<ul>
+						@foreach (var response in question.FreeResponses!)
+						{
+							<li>
+								@response.OriginalText @* TODO Translated Text *@
+								<div class="dropdown is-hoverable">
+									<div class="dropdown-trigger">
+										<span class="tag is-dark">Original Text <span class="icon is-small"><i class="fas fa-angle-down"></i></span></span>
+									</div>
+									<div class="dropdown-menu">
+										<div class="dropdown-content">
+											<div class="dropdown-item">
+												@response.OriginalText
+											</div>
+										</div>
+									</div>
 								</div>
-							</div>
-						</div>
-					</div>
-				</li>
-				<li>Another free response</li>
-				<li>More free responses</li>
-				<li>This list will show all of the free responses to the survey</li>
-				<li>All of the free responses will have a "Translation" hover that will be auto-generated just like the one above</li>
-			</ul>
+							</li>
+						}
+					</ul>
+				</div>
+			}
+			else
+			{
+				<table class="table is-fullwidth">
+					@foreach (var response in question.FixedResponses.OrderByDescending(k => k.Value))
+					{
+						<tr>
+							<td>@response.Key</td>
+							<td>@response.Value</td>
+							<td><progress class="progress" value="@response.Value" max="@Model.TotalResponses"></progress></td>
+						</tr>
+					}
+				</table>
+			}
 		</div>
-	</div>
-
-	<div class="box">
-		<h2 class="is-size-5">Question 1 asked <small>which of the following are true?</small></h2>
-		<table class="table is-fullwidth">
-			<tr>
-				<td>1+1 = 2</td>
-				<td>1200</td>
-				<td><progress class="progress" value="1200" max="1234"></progress></td>
-			</tr>
-			<tr>
-				<td>The sun is out at night</td>
-				<td>120</td>
-				<td><progress class="progress" value="120" max="1234"></progress></td>
-			</tr>
-			<tr>
-				<td>This statement is false</td>
-				<td>4</td>
-				<td><progress class="progress" value="4" max="1234"></progress></td>
-			</tr>
-		</table>
-	</div>
+	}
 </section>
