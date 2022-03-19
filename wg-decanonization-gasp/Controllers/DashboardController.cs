@@ -6,6 +6,7 @@ using GaspApp.Models.DashboardViewModels;
 using GaspApp.Models;
 using System.Security.Claims;
 using GaspApp.Services;
+using System.Linq;
 
 namespace GaspApp.Controllers
 {
@@ -28,7 +29,14 @@ namespace GaspApp.Controllers
             var model = new DashboardIndexViewModel
             {
                 Articles = articles,
-                Surveys = surveys,
+                Surveys = surveys.Select(x =>
+                {
+                    return new WrappedSurvey
+                    {
+                        Survey = x,
+                        ResponseCount = _dbContext.SurveyResponses.Count(r => r.Survey == x)
+                    };
+                }).ToList(),
             };
             return View(model);
         }

@@ -18,15 +18,33 @@ namespace GaspApp.Controllers
 
         public async Task<IActionResult> Index(Guid? id = null)
         {
+            Guid surveyResponderId;
+            if (!Request.Cookies.TryGetValue("AR-Survey-Responder", out var surveyResponderText))
+            {
+                surveyResponderId = Guid.NewGuid();
+                Response.Cookies.Append(
+                    "AR-Survey-Responder", 
+                    surveyResponderId.ToString(), 
+                    new CookieOptions { IsEssential = true, SameSite = SameSiteMode.Strict, Expires = DateTimeOffset.MaxValue });
+            }
+            else
+            {
+                surveyResponderId = Guid.Parse(surveyResponderText!);
+            }
+
             Survey? model;
             if (id != null)
             {
                 model = await _dbContext.Surveys.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == id);
                 if (model == null)
                     return NotFound();
+                if (await _dbContext.SurveyResponses.AnyAsync(x => x.ResponderId == surveyResponderId))
+                    return Forbid(); // TODO: redirect to results
             }
             else
-                model = (await _dbContext.Surveys.Include(x => x.Items).ToListAsync()).FirstOrDefault(x => x.IsActive());
+                model = (await _dbContext.Surveys.Include(x => x.Items).ToListAsync())
+                    .Where(x => x.IsActive())
+                    .FirstOrDefault(x => !_dbContext.SurveyResponses.Any(r => r.ResponderId == surveyResponderId && r.Survey == x));
 
             if (model == null)
                 return RedirectToAction(nameof(NoActiveSurveys));
@@ -36,8 +54,27 @@ namespace GaspApp.Controllers
 
         public IActionResult NoActiveSurveys() => View();
 
+        public IActionResult AvailableSurveys()
+        {
+            if (!Request.Cookies.TryGetValue("AR-Survey-Responder", out var surveyResponderText))
+                return Problem("No responder cookie, visit surveys");
+            Guid surveyResponderId = Guid.Parse(surveyResponderText!);
+
+            return Json(new
+            {
+                ResponderId = surveyResponderId,
+                Surveys = _dbContext.Surveys.Select(x => new
+                {
+                    Id = x.Id,
+                    Responded = _dbContext.SurveyResponses.Any(r => r.Survey == x && r.ResponderId == surveyResponderId)
+                })
+            });
+        }
+
         public IActionResult SubmitResult([FromForm] IFormCollection form)
         {
+            Guid responderId = Guid.Parse(Request.Cookies["AR-Survey-Responder"]!); // TODO: check for null
+
             // Flatten form to a dictionary
             var kv = new Dictionary<string, string>();
             foreach (var (k, v) in form)
@@ -54,6 +91,7 @@ namespace GaspApp.Controllers
             var response = new SurveyResponse
             {
                 Id = Guid.NewGuid(),
+                ResponderId = responderId,
                 Survey = survey,
                 Country = kv["meta-country"],
                 ResponseJson = json

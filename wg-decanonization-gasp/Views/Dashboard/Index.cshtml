@@ -62,17 +62,19 @@
 				<thead>
 					<th>Description</th>
 					<th>Is Active?</th>
+					<th>Responses</th>
 					<th>Options</th>
 				</thead>
 				<tbody>
 				@foreach (var srv in Model.Surveys)
 				{
 					<tr>
-						<td>@srv.Description</td>
-						<td>@srv.IsActive()</td>
+						<td>@srv.Survey.Description</td>
+						<td>@srv.Survey.IsActive()</td>
+						<td>@srv.ResponseCount</td>
 						<td>
-							<a asp-action="ModifySurvey" asp-route-id="@srv.Id" class="button is-primary is-small">Modify</a>
-							<a asp-action="DeleteSurvey" asp-route-id="@srv.Id" class="button is-danger is-small">Delete</a>
+							<a asp-action="ModifySurvey" asp-route-id="@srv.Survey.Id" class="button is-primary is-small">Modify</a>
+							<a asp-action="DeleteSurvey" asp-route-id="@srv.Survey.Id" class="button is-danger is-small">Delete</a>
 						</td>
 					</tr>		
 				}
