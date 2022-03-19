@@ -18,44 +18,23 @@ namespace GaspApp.Controllers
 
         public async Task<IActionResult> Index(Guid? id = null)
         {
-            var model = new Survey
-            {
-                Id = Guid.NewGuid(),
-                Items = new List<SurveyItem>
-                {
-                    new SurveyItem
-                    {
-                        Label = "Do you do this, that, or something else?",
-                        Position = 1,
-                        Name = "Item1",
-                        ItemType = SurveyItemType.SingleChoice, 
-                        ItemContents = "This;;That;;Something else"
-                    },
-                    new SurveyItem
-                    {
-                        Label = "Which is your favorite thing to do?",
-                        Position = 2,
-                        Name = "Item2",
-                        ItemType = SurveyItemType.FreeResponse,
-                    },
-                    new SurveyItem
-                    {
-                        Label = "Which of the following are true?",
-                        Position = 3,
-                        Name = "Item 3",
-                        ItemType = SurveyItemType.MultiChoice,
-                        ItemContents = "1 + 1 = 2;;The sun is out at night;;This statement is false"
-                    }
-                }
-            };
+            Survey? model;
             if (id != null)
             {
                 model = await _dbContext.Surveys.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == id);
                 if (model == null)
                     return NotFound();
             }
+            else
+                model = (await _dbContext.Surveys.ToListAsync()).FirstOrDefault(x => x.IsActive());
+
+            if (model == null)
+                return NoActiveSurveys();
+
             return View(model);
         }
+
+        public IActionResult NoActiveSurveys() => View();
 
         public IActionResult SubmitResult([FromForm] IFormCollection form)
         {
