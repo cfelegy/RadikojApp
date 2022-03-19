@@ -205,6 +205,10 @@ namespace GaspApp.Controllers
             if (survey == null)
                 return NotFound();
             await _dbContext.Entry(survey).Collection(x => x.Items).LoadAsync();
+            if (survey.ActivateDate != null)
+                survey.ActivateDate = survey.ActivateDate.Value.ToLocalTime();
+            if (survey.DeactivateDate != null)
+                survey.DeactivateDate = survey.DeactivateDate.Value.ToLocalTime();
 
             return View(survey);
         }
@@ -220,10 +224,10 @@ namespace GaspApp.Controllers
 
             survey.Description = form["Description"].Single();
 
-            if (form.TryGetValue("ActivateDate", out var activateDate))
-                survey.ActivateDate = DateTimeOffset.Parse(activateDate.Single());
-            if (form.TryGetValue("DeactivateDate", out var deactivateDate))
-                survey.DeactivateDate = DateTimeOffset.Parse(deactivateDate.Single());
+            if (form.TryGetValue("ActivateDate", out var activateDate) && activateDate.Single() != string.Empty)
+                survey.ActivateDate = DateTimeOffset.Parse(activateDate.Single()).ToUniversalTime();
+            if (form.TryGetValue("DeactivateDate", out var deactivateDate) && deactivateDate.Single() != string.Empty)
+                survey.DeactivateDate = DateTimeOffset.Parse(deactivateDate.Single()).ToUniversalTime();
 
             var itemKeys = form.Keys.Where(k => k.StartsWith("si/")).Select(k => k.Split("/")[1]).Distinct();
             foreach (var itemKey in itemKeys)

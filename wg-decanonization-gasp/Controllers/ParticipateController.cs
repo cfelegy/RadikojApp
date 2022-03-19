@@ -26,10 +26,10 @@ namespace GaspApp.Controllers
                     return NotFound();
             }
             else
-                model = (await _dbContext.Surveys.ToListAsync()).FirstOrDefault(x => x.IsActive());
+                model = (await _dbContext.Surveys.Include(x => x.Items).ToListAsync()).FirstOrDefault(x => x.IsActive());
 
             if (model == null)
-                return NoActiveSurveys();
+                return RedirectToAction(nameof(NoActiveSurveys));
 
             return View(model);
         }
@@ -65,7 +65,7 @@ namespace GaspApp.Controllers
             {
                 /* TODO another */
             }
-            return RedirectToAction("Results", routeValues: new { id = survey.Id });
+            return RedirectToAction(nameof(Results), routeValues: new { id = survey.Id });
         }
 
         public IActionResult Map()

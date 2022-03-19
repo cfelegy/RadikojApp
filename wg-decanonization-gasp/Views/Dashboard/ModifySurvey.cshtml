@@ -16,7 +16,19 @@
 			<div class="field">
 				<label class="label" asp-for="@Model.Description">@Localizer["Description"]</label>
 				<div class="control">
-					<input class="input" type="text" asp-for="@Model.Description" />
+					<input class="input" type="text" asp-for="@Model.Description" required />
+				</div>
+			</div>
+			<div class="field">
+				<label class="label" asp-for="@Model.ActivateDate">@Localizer["Activation date"]</label>
+				<div class="control">
+					<input class="input" type="datetime-local" asp-for="@Model.ActivateDate" />
+				</div>
+			</div>
+			<div class="field">
+				<label class="label" asp-for="@Model.DeactivateDate">@Localizer["Deactivation date"]</label>
+				<div class="control">
+					<input class="input" type="datetime-local" asp-for="@Model.DeactivateDate" />
 				</div>
 			</div>
 
@@ -36,11 +48,11 @@
 <div class="box is-hidden" id="entry-template">
 	<div class="field">
 		<label class="label is-small">Identification name (for data storage)</label>
-		<input class="input is-small entry-name-replacer entry-name" type="text" name="si/guid/name" placeholder="name" />
+		<input class="input is-small entry-name-replacer entry-name" type="text" name="si/guid/name" placeholder="name" required />
 	</div>
 	<div class="field">
 		<label class="label is-small">Response label (question)</label>
-		<input class="input is-small entry-name-replacer entry-label" type="text" name="si/guid/label" placeholder="label" />
+		<input class="input is-small entry-name-replacer entry-label" type="text" name="si/guid/label" placeholder="label" required />
 	</div>
 	<div class="field">
 		<label class="label is-small">Response type</label>
