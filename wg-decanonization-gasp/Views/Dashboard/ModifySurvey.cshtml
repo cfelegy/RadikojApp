@@ -3,7 +3,7 @@
 @inject SharedViewLocalizer Localizer
 @{
 	ViewData["Title"] = Localizer["Modify Survey"];
-	var itemJson = JsonConvert.SerializeObject(Model.Items);
+	var itemJson = JsonConvert.SerializeObject(Model!.Items);
 }
 
 <div class="container">
@@ -20,43 +20,78 @@
 				</div>
 			</div>
 
-			<pre>
-				@itemJson
-			</pre>
+			<div id="entry-container"></div>
 
-			<div class="box" id="entry-template" hidden>
-				<div class="field">
-					<label class="label is-small">Identification name (for data storage)</label>
-					<input class="input is-small" type="text" name="si/guid/name" placeholder="name" />
-				</div>
-				<div class="field">
-					<label class="label is-small">Response label (question)</label>
-					<input class="input is-small" type="text" name="si/guid/label" placeholder="label" />
-				</div>
-				<div class="field">
-					<label class="label is-small">Response type</label>
-					<span class="select is-small">
-						<select name="si/guid/type">
-							<option value="FreeResponse">Free response</option>
-							<option value="SingleChoice">Select one</option>
-							<option value="MultiChoice">Select many</option>
-						</select>
-					</span>
-				</div>
-				<div class="field">
-					<label class="label is-small">Contents</label>
-					<input class="input is-small" type="text" name="si/guid/contents" placeholder="contents" />
-				</div>
-				<div class="field">
-					<label class="label is-small">Position</label>
-					<input class="input is-small" type="number" name="si/guid/position" placeholder="position" />
-				</div>
-			</div>
-
+			<a class="button is-link is-outlined is-small" onclick="AddNewEntry()">+ Add Item</a>
 			
+			<hr />
+
 			<div class="control">
 				<button class="button is-success" type="submit">@Localizer["Submit"]</button>
 			</div>
 		</form>
 	</div>
 </div>
+
+<div class="box is-hidden" id="entry-template">
+	<div class="field">
+		<label class="label is-small">Identification name (for data storage)</label>
+		<input class="input is-small entry-name-replacer entry-name" type="text" name="si/guid/name" placeholder="name" />
+	</div>
+	<div class="field">
+		<label class="label is-small">Response label (question)</label>
+		<input class="input is-small entry-name-replacer entry-label" type="text" name="si/guid/label" placeholder="label" />
+	</div>
+	<div class="field">
+		<label class="label is-small">Response type</label>
+		<span class="select is-small">
+			<select name="si/guid/type" class="entry-name-replacer entry-type">
+				<option value="FreeResponse">Free response</option>
+				<option value="SingleChoice">Select one</option>
+				<option value="MultiChoice">Select many</option>
+			</select>
+		</span>
+	</div>
+	<div class="field">
+		<label class="label is-small">Contents</label>
+		<input class="input is-small entry-name-replacer entry-contents" type="text" name="si/guid/contents" placeholder="contents" />
+	</div>
+	<div class="field">
+		<label class="label is-small">Position</label>
+		<input class="input is-small entry-name-replacer entry-position" type="number" name="si/guid/position" placeholder="position" />
+	</div>
+</div>
+
+<script>
+	const entryTemplate = document.getElementById("entry-template");
+	const entryContainer = document.getElementById("entry-container");
+	const existingItems = @Html.Raw(itemJson);
+
+	function CreateEntry(id) {
+		let entry = entryTemplate.cloneNode(true);
+		entry.classList.remove("is-hidden");
+		entry.querySelectorAll(".entry-name-replacer").forEach(function(item) {
+			item.name = item.name.replace("guid", id);
+		});
+		return entry;
+	}
+
+	function AddNewEntry() {
+		let tempGuid = "__GenerateGuid__-" + Math.random().toString();
+		let entry = CreateEntry(tempGuid);
+		entryContainer.appendChild(entry);
+	}
+
+	existingItems.forEach(function (item) {
+		let entry = CreateEntry(item.Id);
+		entry.querySelector('.entry-name').value = item.Name;
+		entry.querySelector('.entry-label').value = item.Label;
+		entry.querySelector('.entry-type').children[item.ItemType].selected = true;
+		entry.querySelector('.entry-contents').value = item.ItemContents;
+		entry.querySelector('.entry-position').value = item.Position;
+		entryContainer.appendChild(entry);
+	});
+
+	// TODO: handle positions
+
+</script>

@@ -14,6 +14,14 @@ namespace GaspApp.Data
         public DbSet<Article> Articles { get; set; }
         public DbSet<LocalizedItem> LocalizedItems { get; set; }
         public DbSet<Survey> Surveys { get; set; }
+        public DbSet<SurveyItem> SurveyItems { get; set; }
         public DbSet<SurveyResponse> SurveyResponses { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Survey>()
+                .HasMany(x => x.Items)
+                .WithOne();
+        }
     }
 }

@@ -2,6 +2,7 @@
 using GaspApp.Models;
 using GaspApp.Models.ParticipateViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace GaspApp.Controllers
@@ -15,7 +16,7 @@ namespace GaspApp.Controllers
             _dbContext = dbContext;
         }
 
-        public IActionResult Index(Guid? id = null)
+        public async Task<IActionResult> Index(Guid? id = null)
         {
             var model = new Survey
             {
@@ -47,6 +48,12 @@ namespace GaspApp.Controllers
                     }
                 }
             };
+            if (id != null)
+            {
+                model = await _dbContext.Surveys.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == id);
+                if (model == null)
+                    return NotFound();
+            }
             return View(model);
         }
 

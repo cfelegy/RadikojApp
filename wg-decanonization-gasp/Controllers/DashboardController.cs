@@ -169,6 +169,17 @@ namespace GaspApp.Controllers
                 Id = Guid.NewGuid(),
                 Description = string.Empty,
                 Items = new List<SurveyItem>()
+                {
+                    new SurveyItem
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "test item",
+                        Label = "test question",
+                        ItemType = SurveyItemType.FreeResponse,
+                        Position = 1,
+                        ItemContents = "",
+                    }
+                }
             };
             _dbContext.Surveys.Add(survey);
             await _dbContext.SaveChangesAsync();
@@ -179,11 +190,11 @@ namespace GaspApp.Controllers
         public async Task<IActionResult> DeleteSurvey(Guid id)
         {
             // TODO: double-check with user
-            var survey = await _dbContext.Surveys.FindAsync(id);
+            var survey = await _dbContext.Surveys.Include(x => x.Items).FirstAsync(x => x.Id == id);
             if (survey == null)
                 return NotFound();
 
-            _dbContext.Surveys.Remove(survey);
+            _dbContext.Remove(survey);
             await _dbContext.SaveChangesAsync();
             return RedirectToAction("Index");
         }
@@ -199,13 +210,13 @@ namespace GaspApp.Controllers
         }
 
         [HttpPost]
-        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> ModifySurvey(Guid id, [FromForm] IFormCollection form)
         {
-            var survey = new Survey();
-            survey.Id = Guid.Parse(form["Id"].Single());
-            if (id != survey.Id)
+            var survey = await _dbContext.Surveys.FindAsync(id);
+            if (survey == null)
                 return NotFound();
+            await _dbContext.Entry(survey).Collection(x => x.Items).LoadAsync();
+            survey.Items.Clear();
 
             survey.Description = form["Description"].Single();
 
@@ -214,6 +225,31 @@ namespace GaspApp.Controllers
             if (form.TryGetValue("DeactivateDate", out var deactivateDate))
                 survey.DeactivateDate = DateTimeOffset.Parse(deactivateDate.Single());
 
+            var itemKeys = form.Keys.Where(k => k.StartsWith("si/")).Select(k => k.Split("/")[1]).Distinct();
+            foreach (var itemKey in itemKeys)
+            {
+                SurveyItem item;
+                if (itemKey.StartsWith("__GenerateGuid__"))
+                    item = new SurveyItem();
+                else
+                {
+                    if (!Guid.TryParse(itemKey, out var itemId)) {
+                        return StatusCode(400);
+                    }
+                    var maybeItem = await _dbContext.SurveyItems.FindAsync(itemId);
+                    if (maybeItem == null)
+                        return NotFound();
+                    item = maybeItem;
+                }
+
+                item.Name = form[$"si/{itemKey}/name"].Single();
+                item.Label = form[$"si/{itemKey}/label"].Single();
+                item.ItemType = (SurveyItemType)Enum.Parse(typeof(SurveyItemType), form[$"si/{itemKey}/type"].Single());
+                item.Position = int.Parse(form[$"si/{itemKey}/position"].Single());
+                item.ItemContents = form[$"si/{itemKey}/contents"].Single();
+                
+                survey.Items.Add(item);
+            }
 
             if (ModelState.IsValid)
             {
