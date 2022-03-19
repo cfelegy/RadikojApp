@@ -2,8 +2,10 @@
 {
 	public class MapViewModel
 	{
-		public string LocationCodes { get; set; }
-		public string LocationNames { get; set; }
-		public string Values { get; set; }
+		public int TotalCountries { get; set; }
+		public int TotalResponses { get; set; }
+		public List<string> LocationCodes { get; set; }
+		public List<string> LocationNames { get; set; }
+		public List<int> Values { get; set; }
 	}
 }

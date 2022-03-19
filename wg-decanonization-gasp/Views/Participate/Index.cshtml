@@ -113,7 +113,7 @@
 	const el = document.getElementById("meta-country");
 	fetch("/js/Countries.json").then(r => r.json()).then(data => {
 		data.forEach(x => {
-			el.appendChild(new Option(x.country, x.abbreviation));
+			el.appendChild(new Option(x.Country, x.Abbreviation));
 		});
 	})
 </script>

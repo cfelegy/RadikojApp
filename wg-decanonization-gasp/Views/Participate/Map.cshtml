@@ -1,26 +1,27 @@
-﻿@model GaspApp.Models.ParticipateViewModels.MapViewModel
+﻿@using Newtonsoft.Json
+@model GaspApp.Models.ParticipateViewModels.MapViewModel
 @inject SharedViewLocalizer Localizer
 
 @{
 	ViewData["Title"] = Localizer["Participation"];
+	var modelJson = JsonConvert.SerializeObject(Model!);
 }
 
 <div class="container" id="map-container">
+	<p class="has-text-centered">We have received @Model.TotalResponses total responses from @Model.TotalCountries different countries.</p>
 	<div id="map" class="center"></div>
 </div>
 
 <script src="https://cdn.plot.ly/plotly-2.4.2.min.js"></script>
 
 <script>
+	const items = @Html.Raw(modelJson);
+
 	var data = [{
 		type: 'choropleth',
-		/*locations: @Model.LocationCodes,
-		text: @Model.LocationNames,
-		z: @Model.Values,*/
-		locations: ['USA', 'GBR', 'JPN', 'IRN', 'ETH', 'ECU'],
 		/*text: ['United States', 'Great Britain', 'Japan', 'Iran', 'Ethiopia', 'Ecuador'],*/
-		z: [10, 15, 13, 4, 16, 8],
-		//autocolorscale: true,
+		locations: items.LocationCodes,
+		z: items.Values,
 		colorscale: "Earth",
 		zmin: 0,
 		showscale: false,

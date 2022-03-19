@@ -68,13 +68,23 @@ namespace GaspApp.Controllers
             return RedirectToAction(nameof(Results), routeValues: new { id = survey.Id });
         }
 
-        public IActionResult Map()
+        public async Task<IActionResult> Map()
         {
+            var responses = await _dbContext.SurveyResponses.ToListAsync();
+
+            var countByCountry = responses
+                .GroupBy(x => x.Country)
+                .Select(g => new { Country = g.Key, Count = g.Count() })
+                .ToList();
+            var totalCountries = responses.DistinctBy(x => x.Country).Count();
+            var totalResponses = responses.Count();
+
             var viewModel = new MapViewModel
             {
-                LocationCodes = "['USA', 'GBR']",
-                LocationNames = "['United States', 'United Kingdom']",
-                Values = "[10, 15]"
+                TotalCountries = totalCountries,
+                TotalResponses = totalResponses,
+                LocationCodes = countByCountry.Select(x => x.Country).ToList(),
+                Values = countByCountry.Select(x => x.Count).ToList(),
             };
             return View(viewModel);
         }
