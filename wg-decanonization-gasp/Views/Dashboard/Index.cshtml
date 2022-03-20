@@ -1,4 +1,5 @@
 ﻿@model GaspApp.Models.DashboardViewModels.DashboardIndexViewModel
+@using Humanizer
 @{
 	ViewData["Title"] = "Dashboard";
 
@@ -9,11 +10,11 @@
 			var content = article.Contents.FirstOrDefault(c => c.Culture == locale);
 			if (content != null)
 			{
-				yield return Html.ActionLink("✏️", "ModifyContent", routeValues: new { articleId = article.Id, contentId = content.Id });
+				yield return Html.Raw($"<a href=\"/Dashboard/ModifyContent?articleId={article.Id}&contentId={content.Id}\" class=\"icon tag is-warning \"><i class=\"bi bi-pencil-fill\"></i></a>");
 			}
 			else
 			{
-				yield return Html.ActionLink("➕", "CreateContent", routeValues: new { articleId = article.Id, locale = locale });
+				yield return Html.Raw($"<a href=\"/Dashboard/CreateContent?articleId={article.Id}&locale={locale}\" class=\"icon tag is-link \"><i class=\"bi bi-plus-circle\"></i></a>");
 			}
 		}
 	}
@@ -25,31 +26,53 @@
 		<h2 class="subtitle">Manage articles and surveys...</h2>
 		<hr />
 		<div class="block">
-			<h1 class="title is-4">Article Management <a class="button is-link is-small" asp-action="CreateArticle">+ Create</a></h1>
+			<h1 class="title is-4">
+				Article Management
+				<a class="button is-link is-small" asp-action="CreateArticle">
+					<span class="icon mr-1"><i class="bi bi-file-earmark-plus"></i></span>
+					Create
+				</a>
+			</h1>
 			<table class="table is-fullwidth">
 				<thead>
 					<tr>
-						<th>Slug</th>
+						<th>Identifier</th>
 						<th>EN</th>
 						<th>AR</th>
 						<th>CN</th>
 						<th>FR</th>
 						<th>RU</th>
 						<th>ES</th>
+						<th>Published?</th>
 						<th>Options</th>
 					</tr>
 				</thead>
 				<tbody>
-				@foreach (var art in Model.Articles)
+				@foreach (var art in Model.Articles.OrderByDescending(x => x.PublishedDate))
 				{
 					var locales = art.Contents.Select(c => c.Culture);
 					<tr>
-						<td><a asp-action="ModifyArticle" asp-route-id="@art.Id">@art.Slug</a></td>
+						<td><p>@art.Slug</p></td>
 						@foreach (var button in LocaleButtons(art))
 						{
 							<td>@button</td>
 						}
-						<td><a asp-action="DeleteArticle" asp-route-id="@art.Id" class="button is-danger is-small">Delete</a></td>
+						<td>
+							@if (art.IsPublished())
+							{
+								<p class="is-size-7"><span class="tag is-success">Published</span> on @art.PublishedDate.ToString("d")</p>
+							}
+							else
+							{
+								<p class="is-size-7"><span class="tag is-danger">Not Published</span> scheduled for @art.PublishedDate.ToString("d")</p>
+							}
+						</td>
+						<td>
+							<a asp-action="ModifyArticle" asp-route-id="@art.Id" class="button is-primary is-small">Modify</a>
+							<a asp-action="DeleteArticle" asp-route-id="@art.Id" class="button is-danger is-small" onclick="return cd()">
+								Delete
+							</a>
+						</td>
 					</tr>
 				}
 				</tbody>
@@ -57,7 +80,13 @@
 		</div>
 		<hr />
 		<div class="block">
-			<h1 class="title is-4">Survey Management <a class="button is-link is-small" asp-action="CreateSurvey">+ Create</a></h1>
+			<h1 class="title is-4">
+				Survey Management
+				<a class="button is-link is-small" asp-action="CreateSurvey">
+					<span class="icon mr-1"><i class="bi bi-file-earmark-plus"></i></span>
+					Create
+				</a>
+			</h1>
 			<table class="table is-fullwidth">
 				<thead>
 					<th>Description</th>
@@ -74,7 +103,9 @@
 						<td>@srv.ResponseCount</td>
 						<td>
 							<a asp-action="ModifySurvey" asp-route-id="@srv.Survey.Id" class="button is-primary is-small">Modify</a>
-							<a asp-action="DeleteSurvey" asp-route-id="@srv.Survey.Id" class="button is-danger is-small">Delete</a>
+							<a asp-action="DeleteSurvey" asp-route-id="@srv.Survey.Id" class="button is-danger is-small" onclick="return cd()">
+								Delete
+							</a>
 						</td>
 					</tr>		
 				}
@@ -83,3 +114,9 @@
 		</div>
 	</section>
 </div>
+
+<script>
+	function cd() {
+		return confirm('Are you sure you would like to delete this item? This action is permanent and may not be reversed!');
+	}
+</script>

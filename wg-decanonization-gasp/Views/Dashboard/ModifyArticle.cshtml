@@ -9,15 +9,27 @@
 		<h1 class="title">@Localizer["Modify Article"]</h1>
 		<form class="form" asp-action="ModifyArticle">
 			<div asp-validation-summary="All" class="is-danger"></div>
-			<input type="hidden" asp-for="@Model.Id" />
+			<input type="hidden" asp-for="@Model!.Id" />
 			<div class="field">
 				<div class="control">
-					<label class="label" asp-for="@Model.Slug">@Localizer["Slug"]</label>
-					<input class="input" asp-for="@Model.Slug" />
+					<label class="label" asp-for="@Model!.Slug">@Localizer["Slug"]</label>
+					<input class="input" asp-for="@Model!.Slug" />
 				</div>
 			</div>
+			<div class="field">
+				<label class="label" asp-for="@Model!.PublishedDate">@Localizer["Publish date"]</label>
+				<div class="control">
+					<input class="input" type="date" asp-for="@Model!.PublishedDate" />
+				</div>
+			</div>
+			<hr />
 			<div class="control">
-				<button class="button is-success" type="submit">@Localizer["Submit"]</button>
+				<button class="button is-success is-outline" type="submit">
+					<span class="icon">
+						<i class="fa-solid fa-check"></i>
+					</span>
+					@Localizer["Save changes"]
+				</button>
 			</div>
 		</form>
 	</div>

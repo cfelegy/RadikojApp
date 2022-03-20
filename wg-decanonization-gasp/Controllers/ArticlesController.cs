@@ -18,10 +18,10 @@ namespace GaspApp.Controllers
             _dbContext = dbContext;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var articles = _dbContext.Articles.Include(x => x.Contents).ToList();
-            var model = new Models.ArticlesViewModels.ArticlesIndexViewModel
+            var articles = (await _dbContext.Articles.Include(x => x.Contents).ToListAsync()).Where(x => x.IsPublished()).ToList();
+            var model = new ArticlesIndexViewModel
             {
                 Articles = articles
             };
@@ -53,41 +53,10 @@ namespace GaspApp.Controllers
 			else
 			{
                 viewModel.Content = article.Contents.First();
-                viewModel.Fallback = true;
+                viewModel.Fallback = true; // TODO: show fallback
 			}
             
-            // TODO: ArticlesArticleViewModel to localize body; just debugging for now
             return View(viewModel);
-        }
-
-        [Authorize]
-        [Route("[controller]/AddDebugArticles")]
-        public async Task<IActionResult> AddDebugArticles()
-        {
-            var account = await _dbContext.Accounts.FindAsync(new Guid(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value));
-            var contentEn = new ArticleContent
-            {
-                Culture = "en-US", // hard-coding like this is bad
-                Title = "Test Article 1",
-                Body = "Contents written for test article 1..."
-            };
-            var contentEs = new ArticleContent
-            {
-                Culture = "es",
-                Title = "Aritculo de Prueba 1",
-                Body = "Los contenidos para el articulo de prueba 1..."
-            };
-            var article = new Article
-            {
-                Slug = "test-1",
-                Author = account,
-                Contents = new List<ArticleContent> { contentEn, contentEs },
-                PublishedDate = DateTimeOffset.Now.ToUniversalTime(),
-            };
-            await _dbContext.Articles.AddAsync(article);
-            await _dbContext.SaveChangesAsync();
-            
-            return RedirectToAction(nameof(Index));
         }
     }
 }

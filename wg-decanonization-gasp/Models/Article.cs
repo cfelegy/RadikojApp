@@ -11,5 +11,13 @@ namespace GaspApp.Models
         // Title for editor
         public string Slug { get; set; }
         public List<ArticleContent> Contents { get; set; }
+
+        public virtual bool IsPublished(DateTimeOffset? at = null)
+        {
+            if (at == null)
+                at = DateTimeOffset.UtcNow;
+
+            return at >= PublishedDate;
+        }
     }
 }

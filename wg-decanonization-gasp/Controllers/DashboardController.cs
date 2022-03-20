@@ -58,7 +58,6 @@ namespace GaspApp.Controllers
 
         public async Task<IActionResult> DeleteArticle(Guid id)
 		{
-            // TODO: double-check with user
             var article = await _dbContext.Articles.FindAsync(id);
             if (article == null)
                 return NotFound();
@@ -84,9 +83,11 @@ namespace GaspApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ModifyArticle(Guid id, [Bind("Slug")] Article article)
+        public async Task<IActionResult> ModifyArticle(Guid id, [FromForm] Article article)
         {
             var dbCopy = _dbContext.Articles.FirstOrDefault(a => a.Id == id);
+            if (dbCopy == null)
+                return NotFound();
 
             ModelState.ClearValidationState("Author");
             ModelState.ClearValidationState("Contents");
@@ -96,6 +97,7 @@ namespace GaspApp.Controllers
             if (ModelState.IsValid)
             {
                 dbCopy.Slug = article.Slug;
+                dbCopy.PublishedDate = article.PublishedDate.ToUniversalTime();
 
                 _dbContext.Update(dbCopy);
 
@@ -197,7 +199,7 @@ namespace GaspApp.Controllers
 
         public async Task<IActionResult> DeleteSurvey(Guid id)
         {
-            // TODO: double-check with user
+            // TODO: cascade deletes through to response table, this is a breaking bug
             var survey = await _dbContext.Surveys.Include(x => x.Items).FirstAsync(x => x.Id == id);
             if (survey == null)
                 return NotFound();
