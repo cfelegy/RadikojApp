@@ -99,7 +99,29 @@
 				{
 					<tr>
 						<td>@srv.Survey.Description</td>
-						<td>@srv.Survey.IsActive()</td>
+						<td>
+							@if (srv.Survey.IsActive())
+							{
+								<p class="is-size-7">
+									<span class="tag is-success">Active</span> until 
+									@(srv.Survey.DeactivateDate.HasValue ? srv.Survey.DeactivateDate.Value.ToString("d") : "forever (!)")
+								</p>
+							}
+							else
+							{
+								<p class="is-size-7">
+									<span class="tag is-danger">Closed</span>
+									@if (srv.Survey.ActivateDate.HasValue && srv.Survey.ActivateDate > DateTimeOffset.Now)
+									{
+										<span>until @srv.Survey.ActivateDate.Value.ToString("d")</span>
+									}
+									else if (srv.Survey.DeactivateDate.HasValue && srv.Survey.DeactivateDate < DateTimeOffset.Now)
+									{
+										<span>on @srv.Survey.DeactivateDate.Value.ToString("d")</span>
+									}
+								</p>
+							}
+						</td>
 						<td>@srv.ResponseCount</td>
 						<td>
 							<a asp-action="ModifySurvey" asp-route-id="@srv.Survey.Id" class="button is-primary is-small">Modify</a>
