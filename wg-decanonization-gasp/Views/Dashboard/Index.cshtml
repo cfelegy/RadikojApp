@@ -95,7 +95,7 @@
 					<th>Options</th>
 				</thead>
 				<tbody>
-				@foreach (var srv in Model.Surveys)
+				@foreach (var srv in Model.Surveys.OrderByDescending(x => x.Survey.ActivateDate ?? DateTimeOffset.MinValue))
 				{
 					<tr>
 						<td>@srv.Survey.Description</td>
