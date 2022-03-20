@@ -13,14 +13,19 @@
 		<h1 class="title">@Localizer["More"]</h1>
 		<h1 class="subtitle">@Localizer["Articles and announcements from the team"]</h1>
 		<hr />
-		@foreach (var item in Model.Articles)
+		@foreach (var group in Model!.Articles.Select(x => new { MonthYear = x.PublishedDate.ToString("MMMM yyyy"), Item = x }).GroupBy(x => x.MonthYear))
 		{
-			<p>
-				<a href="~/Articles/@item.Slug">
-					@(item.Contents.FirstOrDefault(x => x.Culture == cultureName)?.Title 
-					?? item.Contents.First().Title)
-				</a>
-			</p>
+			<h2 class="has-text-weight-bold is-size-4">@group.Key</h2>
+			@foreach (var item in group)
+			{
+				<p>
+					<a href="~/Articles/@item.Item.Slug">
+						@(item.Item.Contents.FirstOrDefault(x => x.Culture == cultureName)?.Title 
+					?? item.Item.Contents.First().Title)
+					</a>
+				</p>
+			}
+			<br />
 		}
 	</section>
 </div>
