@@ -18,19 +18,7 @@ namespace GaspApp.Controllers
 
         public async Task<IActionResult> Index(Guid? id = null)
         {
-            Guid surveyResponderId;
-            if (!Request.Cookies.TryGetValue("AR-Survey-Responder", out var surveyResponderText))
-            {
-                surveyResponderId = Guid.NewGuid();
-                Response.Cookies.Append(
-                    "AR-Survey-Responder", 
-                    surveyResponderId.ToString(), 
-                    new CookieOptions { IsEssential = true, SameSite = SameSiteMode.Strict, Expires = DateTimeOffset.MaxValue });
-            }
-            else
-            {
-                surveyResponderId = Guid.Parse(surveyResponderText!);
-            }
+            var surveyResponderId = GetResponderId();
 
             Survey? model;
             if (id != null)
@@ -47,33 +35,14 @@ namespace GaspApp.Controllers
                     .FirstOrDefault(x => !_dbContext.SurveyResponses.Any(r => r.ResponderId == surveyResponderId && r.Survey == x));
 
             if (model == null)
-                return RedirectToAction(nameof(NoActiveSurveys));
+                return RedirectToAction(nameof(List), routeValues: new { code = 1 });
 
             return View(model);
         }
 
-        public IActionResult NoActiveSurveys() => View();
-
-        public IActionResult AvailableSurveys()
-        {
-            if (!Request.Cookies.TryGetValue("AR-Survey-Responder", out var surveyResponderText))
-                return Problem("No responder cookie, visit surveys");
-            Guid surveyResponderId = Guid.Parse(surveyResponderText!);
-
-            return Json(new
-            {
-                ResponderId = surveyResponderId,
-                Surveys = _dbContext.Surveys.Select(x => new
-                {
-                    Id = x.Id,
-                    Responded = _dbContext.SurveyResponses.Any(r => r.Survey == x && r.ResponderId == surveyResponderId)
-                })
-            });
-        }
-
         public IActionResult SubmitResult([FromForm] IFormCollection form)
         {
-            Guid responderId = Guid.Parse(Request.Cookies["AR-Survey-Responder"]!); // TODO: check for null
+            var responderId = GetResponderId();
 
             // Flatten form to a dictionary
             var kv = new Dictionary<string, string>();
@@ -179,6 +148,48 @@ namespace GaspApp.Controllers
             }
             
             return View(model);
+        }
+
+        public async Task<IActionResult> List(int? code = 0)
+        {
+            var responderId = GetResponderId();
+            var surveys = (await _dbContext.Surveys.ToListAsync()).OrderByDescending(x => x.ActivateDate).ToList();
+            var responses = await _dbContext.SurveyResponses.Where(r => r.ResponderId == responderId).ToListAsync();
+
+            var wrappedSurveys = new List<WrappedSurvey>();
+            foreach (var survey in surveys)
+            {
+                wrappedSurveys.Add(new WrappedSurvey
+                {
+                    Survey = survey,
+                    HasResponded = responses.Any(r => r.Survey.Id == survey.Id)
+                });
+            }
+            var model = new ListViewModel
+            {
+                Surveys = wrappedSurveys
+            };
+            if (code == 1)
+                model.Message = "You have answered all surveys currently available.";
+
+            return View(model);
+        }
+
+        public Guid GetResponderId()
+        {
+            if (!Request.Cookies.TryGetValue("AR-Survey-Responder", out var surveyResponderText))
+            {
+                var responderId = Guid.NewGuid();
+                Response.Cookies.Append(
+                    "AR-Survey-Responder",
+                    responderId.ToString(),
+                    new CookieOptions { IsEssential = true, SameSite = SameSiteMode.Strict, Expires = DateTimeOffset.MaxValue });
+                return responderId;
+            }
+            else
+            {
+                return Guid.Parse(surveyResponderText!);
+            }
         }
     }
 }

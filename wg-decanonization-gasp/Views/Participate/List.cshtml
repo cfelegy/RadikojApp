@@ -1,0 +1,47 @@
+﻿@model GaspApp.Models.ParticipateViewModels.ListViewModel
+@inject SharedViewLocalizer Localizer    
+@{
+	ViewData["Title"] = Localizer["All Surveys"];
+}
+
+<div class="container">
+	<section class="section">
+		@if (Model!.Message != null)
+		{
+			<div class="notification">
+				@Localizer[@Model.Message]
+			</div>
+		}
+
+		<h1 class="title">@Localizer["All Surveys"]</h1>
+		<hr />
+		<table class="table is-fullwidth">
+			@foreach (var survey in Model!.Surveys)
+			{
+				<tr>
+					<td><a href="about:blank">@survey.Survey.Description</a></td>
+					<td>
+						@if (survey.Survey.IsActive())
+						{
+							<span class="tag is-light">Accepting responses</span>
+						}
+						else
+						{
+							<span class="tag is-dark">Responses closed</span>	
+						}
+					</td>
+					<td>
+						@if (survey.HasResponded)
+						{
+							<p>You have already responded</p>
+						}
+						else
+						{
+							<p>You may <a asp-action="Index" asp-route-id="@survey.Survey.Id">respond to this survey</a></p>
+						}
+						<td><a asp-action="Results" asp-route-id="@survey.Survey.Id">View results</a></td>
+				</tr>
+			}
+		</table>
+	</section>
+</div>
