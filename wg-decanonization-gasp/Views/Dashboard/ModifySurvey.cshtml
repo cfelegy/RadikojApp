@@ -70,8 +70,9 @@
 	</div>
 	<div class="field">
 		<label class="label is-small">Position</label>
-		<input class="input is-small entry-name-replacer entry-position" type="number" name="si/guid/position" placeholder="position" />
+		<input class="input is-small entry-name-replacer entry-position" type="number" name="si/guid/position" placeholder="position" required />
 	</div>
+	<a class="entry-remove-link">Remove item</a>
 </div>
 
 <script>
@@ -85,7 +86,14 @@
 		entry.querySelectorAll(".entry-name-replacer").forEach(function(item) {
 			item.name = item.name.replace("guid", id);
 		});
+		entry.querySelector('.entry-remove-link').onclick = RemoveEntry;
+		entry.id = id;
 		return entry;
+	}
+
+	function RemoveEntry(event) {
+		let entry = event.target.parentNode;
+		entry.parentNode.removeChild(entry);
 	}
 
 	function AddNewEntry() {
