@@ -155,19 +155,41 @@ namespace GaspApp.Controllers
         public async Task<IActionResult> ModifyContent(Guid id, [Bind("Title", "Body")] ArticleContent content)
 		{
             var dbCopy = _dbContext.Articles.Include(x => x.Contents).SelectMany(x => x.Contents).FirstOrDefault(c => c.Id == id);
+            if (dbCopy == null)
+                return NotFound();
 
             ModelState.ClearValidationState("Culture");
             ModelState.MarkFieldValid("Culture");
+
+            bool autoConvert = Request.Form.TryGetValue("autoconvert", out var autoConv) && (autoConv.SingleOrDefault() ?? "false") == "true";
+            if (autoConvert)
+            {
+                ModelState.ClearValidationState("Body");
+                ModelState.MarkFieldValid("Body");
+            }
 
             if (ModelState.IsValid)
 			{
                 dbCopy.Title = content.Title;
                 dbCopy.Body = content.Body;
+                
+                if (autoConvert)
+                {
+                    var article = _dbContext.Articles.Include(a => a.Contents).FirstOrDefault(a => a.Contents.Any(c => c.Id == id));
+                    if (article == null)
+                        return NotFound("Unable to locate containing article");
+                    var englishContent = article.Contents.FirstOrDefault(c => c.Culture == "en-US");
+                    if (englishContent == null)
+                        return NotFound("Unable to locate English content for this article, has it already been created?");
+                    var translationResult = await _translationService.TranslateStringAsync(englishContent.Body, to: dbCopy.Culture);
+                    var translation = translationResult.Translations.Single();
+                    dbCopy.Body = translation.Text;
+                }
 
                 _dbContext.Update(dbCopy);
 
                 await _dbContext.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
 			}
             return View(dbCopy);
 		}
