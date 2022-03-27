@@ -302,9 +302,18 @@ namespace GaspApp.Controllers
             return RedirectToAction("Index", "Participate", new { id = id, preview = true });
 		}
 
-        public IActionResult Translations()
+        public IActionResult Translations(string group = "[global]")
 		{
-            var translations = _dbContext.LocalizedItems.ToList().GroupBy(i => i.Key).Select(
+            var groups = _dbContext.LocalizedItems.Select(i => i.Group).Distinct().OrderBy(i => i).ToList();
+            /*var groupKv = new List<KeyValuePair<string, string>>(); // not using a dictionary since I want order somewhat preserved
+            groupKv.Add(new KeyValuePair<string, string>("[global]", "** Global **"));
+            foreach (var key in groups)
+			{
+                if (key == "[global]") continue;
+
+			}*/
+
+            var translations = _dbContext.LocalizedItems.ToList().Where(i => i.Group == group).GroupBy(i => i.Key).Select(
                 x =>
                 {
                     return new TranslationsLocalizedItem
@@ -316,6 +325,8 @@ namespace GaspApp.Controllers
             );
             var model = new TranslationsViewModel
             {
+                ActiveGroup = group,
+                Groups = groups,
                 Items = translations.ToList(),
             };
             return View(model);

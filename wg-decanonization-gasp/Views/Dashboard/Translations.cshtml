@@ -8,6 +8,19 @@
 	<section class="section">
 		<h1 class="title">Translations</h1>
 		<h2 class="subtitle">Manage site translations</h2>
+		<p>
+			Currently editing translation group <i>@Model.ActiveGroup</i>. <br />
+			Click a dropdown option to change:
+			<select class="select is-small" id="group-select" onchange="changeGroup()">
+				<option value="null">(Click to change group)</option>
+				@foreach (var group in Model!.Groups)
+				{
+					<option>@group</option>
+				}
+			</select>
+			<br />
+			<a class="button is-outlined is-danger is-small">Auto-Translate all entries in this group from English</a>
+		</p>
 	</section>
 </div>
 <table class="table is-fullwidth">
@@ -40,6 +53,12 @@
 </table>
 
 <script>
+	function changeGroup() {
+		let v = document.querySelector("#group-select").value;
+		if (v === null) return;
+		window.location = "/Dashboard/Translations?group=" + v;
+	}
+
 	function st(element) {
 		let auto = element.innerText === 'Auto';
 
