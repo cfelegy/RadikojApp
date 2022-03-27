@@ -1,6 +1,8 @@
 ﻿using GaspApp.Data;
 using GaspApp.Models;
 using GaspApp.Models.ParticipateViewModels;
+using GaspApp.Services;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -9,10 +11,12 @@ namespace GaspApp.Controllers
 {
     public class ParticipateController : Controller
     {
+        private AzureTranslationService _translationService;
         private GaspDbContext _dbContext;
 
-        public ParticipateController(GaspDbContext dbContext)
+        public ParticipateController(AzureTranslationService translationService, GaspDbContext dbContext)
         {
+            _translationService = translationService;
             _dbContext = dbContext;
         }
 
@@ -31,6 +35,8 @@ namespace GaspApp.Controllers
                     if (preview == null || (preview != null && preview == false))
                         return RedirectToAction(nameof(Results), new { id = id });
                 }
+                if (!model.IsActive())
+                    return RedirectToAction(nameof(List), routeValues: new { code = 2 });
             }
             else
                 model = (await _dbContext.Surveys.Include(x => x.Items).ToListAsync())
@@ -40,7 +46,8 @@ namespace GaspApp.Controllers
             if (model == null)
                 return RedirectToAction(nameof(List), routeValues: new { code = 1 });
 
-            ViewBag.Preview = true;
+            if (preview != null && preview == true)
+                ViewBag.Preview = true;
             return View(model);
         }
 
@@ -126,10 +133,15 @@ namespace GaspApp.Controllers
                     questionResult.FreeResponses = new List<FreeResponseAnswer>();
                     foreach (var result in results)
                     {
+                        var originalText = result.Response.Value<string>(item.Name)!;
+                        var translatedText = await _translationService.TranslateStringAsync(
+                            originalText,
+                            to: Request.HttpContext.Features.Get<IRequestCultureFeature>()!.RequestCulture.Culture.TwoLetterISOLanguageName,
+                            autoFrom: true); // TODO: cache me
                         var freeResponseAnswer = new FreeResponseAnswer
                         {
                             OriginalText = result.Response.Value<string>(item.Name)!,
-                            // TODO: TranslatedText
+                            TranslatedText = translatedText.Translations.Single().Text,
                         };
                         questionResult.FreeResponses.Add(freeResponseAnswer);
                     }
@@ -173,8 +185,18 @@ namespace GaspApp.Controllers
             {
                 Surveys = wrappedSurveys
             };
-            if (code == 1)
-                model.Message = "You have answered all surveys currently available.";
+            code = code ?? 0;
+            switch (code)
+			{
+                case 1:
+                    model.Message = "You have answered all surveys currently available.";
+                    break;
+                case 2:
+                    model.Message = "This survey is closed.";
+                    break;
+                default:
+                    break;
+            }
 
             return View(model);
         }

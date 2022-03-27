@@ -5,7 +5,7 @@
 @inject IOptions<RequestLocalizationOptions> Options
 
 @{
-	var returnUrl = string.Concat("~", Context.Request.Path.Value ?? "/");
+	var returnUrl = string.Concat("~", Context.Request.Path.Value ?? "/", Context.Request.QueryString.ToString());
 	var cultureItems = Options.Value!.SupportedCultures!
 		.OrderBy(c => c.DisplayName)
 		.ToList();

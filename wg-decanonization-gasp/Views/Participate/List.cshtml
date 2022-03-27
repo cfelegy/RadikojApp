@@ -19,7 +19,7 @@
 			@foreach (var survey in Model!.Surveys)
 			{
 				<tr>
-					<td><a href="about:blank">@survey.Survey.Description</a></td>
+					<td><b>@Localizer.Get(survey.Survey.Description, survey.Survey.LocalGroup)</b></td>
 					<td>
 						@if (survey.Survey.IsActive())
 						{
@@ -35,11 +35,16 @@
 						{
 							<p>@Localizer["You have already responded"]</p>
 						}
+						else if (!survey.Survey.IsActive())
+						{
+							<p>@Localizer["This survey is closed."]</p>
+						}
 						else
 						{
-							<p>You may <a asp-action="Index" asp-route-id="@survey.Survey.Id">@Localizer["respond to this survey"]</a></p>
+							<p>@Localizer["You may"] <a asp-action="Index" asp-route-id="@survey.Survey.Id">@Localizer["respond to this survey"]</a></p>
 						}
-						<td><a asp-action="Results" asp-route-id="@survey.Survey.Id">@Localizer["View results"]</a></td>
+					</td>
+					<td><a asp-action="Results" asp-route-id="@survey.Survey.Id">@Localizer["View results"]</a></td>
 				</tr>
 			}
 		</table>

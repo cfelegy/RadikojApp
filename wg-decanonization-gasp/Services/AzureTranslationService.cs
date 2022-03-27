@@ -17,15 +17,16 @@ namespace GaspApp.Services
             _location = configuration["Azure:TranslationLocation"];
         }
 
-        public async Task<AzureTranslationResult> TranslateStringAsync(string input, string? to = default)
+        public async Task<AzureTranslationResult> TranslateStringAsync(string input, string? to = default, bool autoFrom = false)
         {
+            var encodedFrom = autoFrom ? "&" : "&from=en";
             var encodedTo = to != null ? $"to={to}" : To;
 
             var uriBuilder = new UriBuilder();
             uriBuilder.Scheme = "https";
             uriBuilder.Host = Endpoint;
             uriBuilder.Path = "/translate";
-            uriBuilder.Query = "api-version=3.0&from=en&" + encodedTo;
+            uriBuilder.Query = "api-version=3.0" + encodedFrom + encodedTo;
 
             var requestBody = JsonConvert.SerializeObject(new object[] { new { Text = input } });
 
