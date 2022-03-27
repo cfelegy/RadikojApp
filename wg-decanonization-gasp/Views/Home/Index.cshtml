@@ -1,7 +1,10 @@
-﻿@inject SharedViewLocalizer Localizer
+﻿@using Humanizer
+@inject SharedViewLocalizer Localizer
 
 @{
 	ViewData["Title"] = "Home";
+	Article? featureArticle = ViewBag.MostRecentArticle;
+	ArticleContent? featureContent = ViewBag.ArticleContent;
 }
 
 <div class="container">
@@ -9,12 +12,19 @@
 		<h1 class="title">@Localizer["Antro Radikoj"]</h1>
 		<h2 class="subtitle">@Localizer["The global anthropology syllabus project"]</h2>
 	</section>
-	<section class="section">
-		<div class="box">
-			<h1 class="title is-4">@Localizer["Our most recent announcement"]</h1>
-			<h2 class="subtitle is-5">(TODO - link to most recent article)</h2>
-		</div>
-	</section>
+	@if (featureArticle != null && featureContent != null)
+	{ 
+		<section class="section">
+			<div class="box">
+				<h1 class="title is-4">@Localizer["Our most recent announcement"]</h1>
+				<br />
+				<h2 class="subtitle is-5">@featureContent.Title <small>@featureArticle.PublishedDate.Humanize()</small></h2>
+				<p>
+					@featureContent.Synopsis(250) <a href="/Articles/@featureArticle.Slug">@Localizer["Read more"]</a>
+				</p>
+			</div>
+		</section>
+	}
 	<section class="section">
 		<p>@Localizer["This project has received support from the Wenner-Gren Foundation"]</p>
 	</section>
