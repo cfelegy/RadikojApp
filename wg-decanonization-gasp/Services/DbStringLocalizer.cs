@@ -27,19 +27,23 @@ namespace GaspApp.Services
                 .Select(x => new LocalizedString(x.Key, x.Text));
         }
 
-        public LocalizedString GetLocalizedString(string key)
+        public LocalizedString GetLocalizedString(string key, string? group = default)
         {
             using var scope = _serviceScopeFactory.CreateScope();
             using var db = scope.ServiceProvider.GetService<GaspDbContext>();
+
+            group = group ?? "[global]";
+
             var item = db.LocalizedItems
                 .Where(r => r.CultureCode == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
+                .Where(r => r.Group == group)
                 .FirstOrDefault(r => r.Key == key);
             if (item == null)
-                CreateTranslationSet(db, key);
+                CreateTranslationSet(db, key, group);
             return new LocalizedString(key, item?.Text ?? key, item == null);
         }
 
-        public void CreateTranslationSet(GaspDbContext db, string key)
+        public void CreateTranslationSet(GaspDbContext db, string key, string group)
         {
             foreach (var cul in LocaleConstants.SUPPORTED_LOCALES_TWOLETTERS)
             {
@@ -47,6 +51,7 @@ namespace GaspApp.Services
                 {
                     Automatic = false,
                     Key = key,
+                    Group = group,
                     Text = cul == "en" ? key : "",
                     CultureCode = cul,
                 });

@@ -10,6 +10,7 @@ namespace GaspApp.Models
         public string Description { get; set; }
         public DateTimeOffset? ActivateDate { get; set; }
         public DateTimeOffset? DeactivateDate { get; set; }
+        public virtual string LocalGroup => $"survey:{Id}";
 
         public bool IsActive(DateTimeOffset? at = null)
         {

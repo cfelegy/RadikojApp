@@ -125,6 +125,7 @@
 						<td>@srv.ResponseCount</td>
 						<td>
 							<a asp-action="ModifySurvey" asp-route-id="@srv.Survey.Id" class="button is-primary is-small">Modify</a>
+							<a asp-action="PreviewSurvey" asp-route-id="@srv.Survey.Id" class="button is-primary is-small">Preview</a>
 							<a asp-action="DeleteSurvey" asp-route-id="@srv.Survey.Id" class="button is-danger is-small" onclick="return cd()">
 								Delete
 							</a>

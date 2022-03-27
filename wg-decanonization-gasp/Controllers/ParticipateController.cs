@@ -16,7 +16,7 @@ namespace GaspApp.Controllers
             _dbContext = dbContext;
         }
 
-        public async Task<IActionResult> Index(Guid? id = null)
+        public async Task<IActionResult> Index(Guid? id = null, bool? preview = false)
         {
             var surveyResponderId = GetResponderId();
 
@@ -26,8 +26,11 @@ namespace GaspApp.Controllers
                 model = await _dbContext.Surveys.Include(x => x.Items).FirstOrDefaultAsync(x => x.Id == id);
                 if (model == null)
                     return NotFound();
-                if (await _dbContext.SurveyResponses.AnyAsync(x => x.ResponderId == surveyResponderId))
-                    return Forbid(); // TODO: redirect to results
+                if (await _dbContext.SurveyResponses.Where(x => x.Survey == model).AnyAsync(x => x.ResponderId == surveyResponderId))
+                {
+                    if (preview == null || (preview != null && preview == false))
+                        return RedirectToAction(nameof(Results), new { id = id });
+                }
             }
             else
                 model = (await _dbContext.Surveys.Include(x => x.Items).ToListAsync())
@@ -37,6 +40,7 @@ namespace GaspApp.Controllers
             if (model == null)
                 return RedirectToAction(nameof(List), routeValues: new { code = 1 });
 
+            ViewBag.Preview = true;
             return View(model);
         }
 

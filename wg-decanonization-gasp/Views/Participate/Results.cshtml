@@ -2,6 +2,7 @@
 @inject SharedViewLocalizer Localizer    
 @{
 	ViewData["Title"] = Localizer["Results"];
+	var GroupLocalizer = Localizer.ScopeForGroup(@Model!.Survey.LocalGroup);
 }
 
 <section class="hero is-small is-primary">
@@ -16,7 +17,7 @@
 	@foreach(var question in Model.Questions)
 	{
 		<div class="box">
-			<h2 class="is-size-5">Question @question.Position asked <small>@question.Label</small></h2>
+			<h2 class="is-size-5">@Localizer["Question ### asked"].ToString().Replace("###", @question.Position.ToString()) <small>@question.Label</small></h2>
 			@if (question.IsFreeResponse)
 			{
 				<p>This was a free-response question. Responses said:</p>

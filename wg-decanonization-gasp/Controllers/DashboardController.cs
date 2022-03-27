@@ -297,6 +297,11 @@ namespace GaspApp.Controllers
             return View(survey);
         }
 
+        public IActionResult PreviewSurvey(Guid id)
+		{
+            return RedirectToAction("Index", "Participate", new { id = id, preview = true });
+		}
+
         public IActionResult Translations()
 		{
             var translations = _dbContext.LocalizedItems.ToList().GroupBy(i => i.Key).Select(

@@ -23,23 +23,23 @@
 					<td>
 						@if (survey.Survey.IsActive())
 						{
-							<span class="tag is-light">Accepting responses</span>
+							<span class="tag is-light">@Localizer["Accepting responses"]</span>
 						}
 						else
 						{
-							<span class="tag is-dark">Responses closed</span>	
+							<span class="tag is-dark">@Localizer["Responses closed"]</span>	
 						}
 					</td>
 					<td>
 						@if (survey.HasResponded)
 						{
-							<p>You have already responded</p>
+							<p>@Localizer["You have already responded"]</p>
 						}
 						else
 						{
-							<p>You may <a asp-action="Index" asp-route-id="@survey.Survey.Id">respond to this survey</a></p>
+							<p>You may <a asp-action="Index" asp-route-id="@survey.Survey.Id">@Localizer["respond to this survey"]</a></p>
 						}
-						<td><a asp-action="Results" asp-route-id="@survey.Survey.Id">View results</a></td>
+						<td><a asp-action="Results" asp-route-id="@survey.Survey.Id">@Localizer["View results"]</a></td>
 				</tr>
 			}
 		</table>
