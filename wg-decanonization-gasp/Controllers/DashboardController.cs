@@ -305,14 +305,6 @@ namespace GaspApp.Controllers
         public IActionResult Translations(string group = "[global]")
 		{
             var groups = _dbContext.LocalizedItems.Select(i => i.Group).Distinct().OrderBy(i => i).ToList();
-            /*var groupKv = new List<KeyValuePair<string, string>>(); // not using a dictionary since I want order somewhat preserved
-            groupKv.Add(new KeyValuePair<string, string>("[global]", "** Global **"));
-            foreach (var key in groups)
-			{
-                if (key == "[global]") continue;
-
-			}*/
-
             var translations = _dbContext.LocalizedItems.ToList().Where(i => i.Group == group).GroupBy(i => i.Key).Select(
                 x =>
                 {
@@ -335,6 +327,26 @@ namespace GaspApp.Controllers
         public IActionResult ModifyTranslation([FromBody] TranslationsLocalizedItem model)
         {
             return Json(ModifyTranslationInternal(model));
+        }
+
+        public async Task<IActionResult> BulkAutoTranslation(string group)
+		{
+            // TODO: DRY right above
+            var translations = _dbContext.LocalizedItems.ToList().Where(i => i.Group == group).GroupBy(i => i.Key).Select(
+                x =>
+                {
+                    return new TranslationsLocalizedItem
+                    {
+                        Key = x.Key,
+                        Values = x.ToDictionary(k => k.CultureCode, v => v.Text)
+                    };
+                }
+            );
+            foreach (var item in translations)
+			{
+                await AutoTranslation(item);
+			}
+            return RedirectToAction(nameof(Translations), new { group = group });
         }
 
         public async Task<IActionResult> AutoTranslation([FromBody] TranslationsLocalizedItem model)

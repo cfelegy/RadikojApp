@@ -19,7 +19,7 @@ namespace GaspApp.Services
 
         public async Task<AzureTranslationResult> TranslateStringAsync(string input, string? to = default, bool autoFrom = false)
         {
-            var encodedFrom = autoFrom ? "&" : "&from=en";
+            var encodedFrom = autoFrom ? "&" : "&from=en&";
             var encodedTo = to != null ? $"to={to}" : To;
 
             var uriBuilder = new UriBuilder();

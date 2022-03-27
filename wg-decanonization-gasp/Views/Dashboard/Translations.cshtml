@@ -9,7 +9,7 @@
 		<h1 class="title">Translations</h1>
 		<h2 class="subtitle">Manage site translations</h2>
 		<p>
-			Currently editing translation group <i>@Model.ActiveGroup</i>. <br />
+			Currently editing translation group <i>@Model!.ActiveGroup</i>. <br />
 			Click a dropdown option to change:
 			<select class="select is-small" id="group-select" onchange="changeGroup()">
 				<option value="null">(Click to change group)</option>
@@ -19,7 +19,9 @@
 				}
 			</select>
 			<br />
-			<a class="button is-outlined is-danger is-small">Auto-Translate all entries in this group from English</a>
+			<a class="button is-outlined is-danger is-small" onclick="return cd()" asp-action="BulkAutoTranslation" asp-route-group="@Model!.ActiveGroup">
+				Auto-Translate all entries in this group from English
+			</a>
 		</p>
 	</section>
 </div>
@@ -57,6 +59,14 @@
 		let v = document.querySelector("#group-select").value;
 		if (v === null) return;
 		window.location = "/Dashboard/Translations?group=" + v;
+	}
+
+	function cd() {
+		if (confirm('Are you sure you would like to auto-convert ALL translations for "@Model.ActiveGroup" using the existing word in English? This action may not be undone!')) {
+			alert('This will take a few moments, please wait for the page to reload.')
+		} else {
+			return false;
+		}
 	}
 
 	function st(element) {
