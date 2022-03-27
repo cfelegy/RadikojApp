@@ -3,6 +3,8 @@
     public enum SignInErrorType
     {
         NotFound,
-        InvalidPassword
+        InvalidToken,
+        SendEmailFailed,
+        ExpiredToken,
     }
 }

@@ -8,8 +8,9 @@ namespace GaspApp.Models
     {
         public Guid Id {  get; set; }
         public string Email { get; set; }
-        public string PasswordHash { get; set; }
         public string DisplayName { get; set; }
-
+        public string LoginToken { get; set; }
+        public DateTimeOffset LoginTokenExpiresAt { get; set; }
+        public string HashedPassword { get; set; }
     }
 }

@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace GaspApp.Services
 {
@@ -12,11 +16,45 @@ namespace GaspApp.Services
     {
         private readonly GaspDbContext _dbContext;
         private readonly IPasswordHasher<Account> _passwordHasher;
-        public AccountService(GaspDbContext dbContext, IPasswordHasher<Account> passwordHasher)
-        {
-            _dbContext = dbContext;
-            _passwordHasher = passwordHasher;
-        }
+        private readonly SendGridClient _sendGridClient;
+		public AccountService(GaspDbContext dbContext, IPasswordHasher<Account> passwordHasher, SendGridClient sendGridClient)
+		{
+			_dbContext = dbContext;
+			_passwordHasher = passwordHasher;
+			_sendGridClient = sendGridClient;
+		}
+		public async Task<SignInErrorType?> CreateSignInToken(string email)
+		{
+            var account = _dbContext.Accounts.SingleOrDefault(x => x.Email == email);
+            if (account == null)
+                return SignInErrorType.NotFound;
+
+            var token = RandomToken(16);
+            account.LoginToken = token;
+            account.LoginTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(15);
+
+            var from = new EmailAddress("sendgrid@felegy.net", "Antro Radikoj: Authentication");
+            var to = new EmailAddress(email);
+
+            string contentTemplate = @"
+Hello {0}, please use the following token to sign in to Antro Radikoj: {1}
+
+This code will expire in 15 minutes.
+
+Thank you.
+";
+            string content = string.Format(contentTemplate, email, token);
+
+            var msg = MailHelper.CreateSingleEmail(from, to, "Antro Radikoj Login Code", content, content);
+            var response = await _sendGridClient.SendEmailAsync(msg);
+            if (!response.IsSuccessStatusCode)
+                return SignInErrorType.SendEmailFailed;
+
+            _dbContext.Update(account);
+            await _dbContext.SaveChangesAsync();
+
+            return null;
+		}
 
         public async Task<SignInErrorType?> SignInAsync(HttpContext context, SignInViewModel viewModel)
         {
@@ -24,12 +62,16 @@ namespace GaspApp.Services
             if (account == null)
                 return SignInErrorType.NotFound;
 
-            var passwordResult = _passwordHasher.VerifyHashedPassword(account, account.PasswordHash, viewModel.Password);
-            if (passwordResult == PasswordVerificationResult.Failed)
-            {
-                // TODO: increment failed attempts
-                return SignInErrorType.InvalidPassword;
-            }
+            if (viewModel.Token != account.LoginToken)
+                return SignInErrorType.InvalidToken;
+            if (account.LoginTokenExpiresAt < DateTimeOffset.UtcNow)
+			{
+                account.LoginToken = "";
+                _dbContext.Update(account);
+                await _dbContext.SaveChangesAsync();
+
+                return SignInErrorType.ExpiredToken;
+			}
 
             ClaimsIdentity identity = new ClaimsIdentity(GetClaims(account), CookieAuthenticationDefaults.AuthenticationScheme);
             ClaimsPrincipal principal = new ClaimsPrincipal(identity);
@@ -44,31 +86,6 @@ namespace GaspApp.Services
             await context.SignOutAsync();
         }
 
-        public void AddDebugSuperUser()
-        {
-            var root = new Account
-            {
-                Email = "root@localhost",
-                PasswordHash = _passwordHasher.HashPassword(null!, "root"),
-                DisplayName = "root"
-            };
-            _dbContext.Accounts.Add(root);
-
-            _dbContext.SaveChanges();
-        }
-        public void AddDemoUser()
-		{
-            var demo = new Account
-            {
-                Email = "demo@demo",
-                PasswordHash = _passwordHasher.HashPassword(null!, "demo"),
-                DisplayName = "Demo Account"
-            };
-            _dbContext.Accounts.Add(demo);
-
-            _dbContext.SaveChanges();
-        }
-
         private IEnumerable<Claim> GetClaims(Account account)
         {
             var claims = new List<Claim>()
@@ -81,5 +98,20 @@ namespace GaspApp.Services
 
             return claims;
         }
+
+        public string RandomToken(int length)
+		{
+            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890$&*";
+            StringBuilder result = new StringBuilder();
+            RandomNumberGenerator rng = RandomNumberGenerator.Create();
+            byte[] bytes = new byte[length];
+            rng.GetNonZeroBytes(bytes);
+            for (int i = 0; i < length; i++)
+			{
+                result.Append(valid[bytes[i] % valid.Length]);
+			}
+            return result.ToString();
+
+		}
     }
 }

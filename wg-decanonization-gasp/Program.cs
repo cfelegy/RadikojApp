@@ -6,6 +6,7 @@ using GaspApp.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using GaspApp.Models;
+using SendGrid;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Account/SignOut";
     });
 builder.Services.AddSingleton<IPasswordHasher<Account>>(new PasswordHasher<Account>());
+builder.Services.AddSingleton<SendGridClient>(new SendGridClient(builder.Configuration["Azure:SendGridKey"]));
 builder.Services.AddScoped<AccountService>();
 
 var app = builder.Build();

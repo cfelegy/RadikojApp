@@ -38,14 +38,32 @@ namespace GaspApp.Controllers
             if (!ModelState.IsValid)
                 return Fail();
 
-            var signInFailure = await _accountService.SignInAsync(HttpContext, viewModel);
-            if (signInFailure != null)
-            {
-                ModelState.AddModelError("Sign in Failure", signInFailure.ToString()!);
+            if (string.IsNullOrEmpty(viewModel.Token))
+			{
+                var result = await _accountService.CreateSignInToken(viewModel.Email);
+                if (result.HasValue)
+                {
+                    ModelState.AddModelError("Sign in Failure", result.ToString()!);
+                }
+                else
+                {
+                    ModelState.AddModelError("In progress:", "A temporary token has been emailed to you. Please check your email and use the token to complete sign-in");
+                }
                 return Fail();
-            }
-
-            return ReturnUrlAction(returnUrl);
+			}
+            else
+			{
+                var result = await _accountService.SignInAsync(HttpContext, viewModel);
+                if (result != null)
+				{
+                    ModelState.AddModelError("Sign in Failure", result.ToString()!);
+                    return Fail();
+                }
+				else
+				{
+                    return ReturnUrlAction(returnUrl);
+                }
+			}
         }
 
         public async Task<IActionResult> SignOut(string? returnUrl = "")
@@ -61,17 +79,6 @@ namespace GaspApp.Controllers
             var accounts = _dbContext.Accounts.ToList();
             return View(accounts);
 		}
-
-        public IActionResult AddDebugSuperUser()
-        {
-            _accountService.AddDebugSuperUser();
-            return RedirectToAction("SignIn");
-        }
-        public IActionResult AddDebugDemoUser()
-        {
-            _accountService.AddDemoUser();
-            return RedirectToAction("SignIn");
-        }
 
         private IActionResult ReturnUrlAction(string? returnUrl)
         {
