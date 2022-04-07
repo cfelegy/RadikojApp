@@ -9,8 +9,8 @@ main {
 }
 
 #map {
-    min-height: 640px !important;
-    height: 640px !important;
+    min-height: 85vh;
+    height: auto;
     z-index: 1;
 }
 
