@@ -8,47 +8,89 @@
 }
 
 <div class="container" id="map-container">
-	<p class="has-text-centered">We have received @Model.TotalResponses total responses from @Model.TotalCountries different countries.</p>
-	<div id="map" class="center"></div>
+	<p class="has-text-centered">We have received @Model.TotalResponses total responses from @Model.TotalCountries different countries: @string.Join(", ", Model.LocationCodes).</p>
+	<div id="map" style="height: 600px;"></div>
 </div>
 
-<script src="https://cdn.plot.ly/plotly-2.4.2.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js?v1.3.0"></script>
 
 <script>
-	const items = @Html.Raw(modelJson);
+	const geoJson = @Html.Raw(Model.GeoJson);
 
-	var data = [{
-		type: 'choropleth',
-		/*text: ['United States', 'Great Britain', 'Japan', 'Iran', 'Ethiopia', 'Ecuador'],*/
-		locations: items.LocationCodes,
-		z: items.Values,
-		colorscale: "Earth",
-		zmin: 0,
-		showscale: false,
-	}];
+	let layer = new L.StamenTileLayer("terrain");
+	let map = new L.map('map', {
+		zoom: 3,
+		center: [15, 30],
+		worldCopyJump: true,
+	});
+	map.addLayer(layer);
 
-	var layout = {
-		geo: {
-			showframe: false,
-			showcoastlines: true,
-			showcountries: true,
-			projection: {
-				type: 'natural earth2',
-				scale: 1,
-				rotation: {
-					lon: 60
-				}
-			},
-		},
-		margin: {
-			b: 0,
-			l: 0,
-			r: 0,
-			t: 0,
-		},
-		autosize: true,
-		height: 650,
-	};
+	function randomColor() {
+		const letters = '0123456789ABCDEF';
+		let color = '#';
+		for (let i = 0; i < 6; i++) {
+			color += letters[Math.floor(Math.random() * 16)];
+		}
+		return color;
+	}
 
-	Plotly.newPlot("map", data, layout, {showLink: false, displayModeBar: false, responsive: false});
+	function style(feature) {
+		return {
+			fillColor: randomColor(),
+			fillOpacity: 0.7,
+			weight: 2,
+			opacity: 1,
+			color: 'lightblue',
+			dashArray: '3'
+		}
+	}
+	function onEachFeature(feature, layer) {
+		layer.on({
+			mouseover: setHighlight,
+			mouseout: resetHighlight,
+			click: zoomToFeature
+		});
+	}
+
+	let geoLayer = L.geoJson(geoJson, { style: style, onEachFeature: onEachFeature }).addTo(map);
+	
+	let info = L.control();
+	info.onAdd = function(map) {
+		this._div = L.DomUtil.create('div', 'choropleth-info');
+		this.update();
+		return this._div;
+	}
+	info.update = function(props) {
+		let html = '';
+		if (props) {
+			html = 'country: ' + props.ADMIN + ', count: ' + props.Count;
+		} else {
+			html = 'Hover over a country';
+		}
+		this._div.innerHTML = html;
+	}
+	info.addTo(map);
+	console.log(info);
+
+	function setHighlight(e) {
+		let layer = e.target;
+
+		layer.setStyle({
+			weight: 5,
+			color: 'blue',
+			dashArray: ''
+		});
+
+		info.update(layer.feature.properties);
+
+		layer.bringToFront();
+	}
+	function resetHighlight(e) {
+		info.update();
+		geoLayer.resetStyle(e.target);
+	}
+	function zoomToFeature(e) {
+		map.fitBounds(e.target.getBounds());
+	}
 </script>

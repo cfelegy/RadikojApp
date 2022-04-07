@@ -7,5 +7,6 @@
 		public List<string> LocationCodes { get; set; }
 		public List<string> LocationNames { get; set; }
 		public List<int> Values { get; set; }
+		public string GeoJson { get; set; }
 	}
 }

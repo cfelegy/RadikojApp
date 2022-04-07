@@ -13,11 +13,13 @@ namespace GaspApp.Controllers
     {
         private AzureTranslationService _translationService;
         private GaspDbContext _dbContext;
+        private GeoService _geoService;
 
-        public ParticipateController(AzureTranslationService translationService, GaspDbContext dbContext)
+        public ParticipateController(AzureTranslationService translationService, GaspDbContext dbContext, GeoService geoService)
         {
             _translationService = translationService;
             _dbContext = dbContext;
+            _geoService = geoService;
         }
 
         public async Task<IActionResult> Index(Guid? id = null, bool? preview = false)
@@ -97,15 +99,19 @@ namespace GaspApp.Controllers
             var totalCountries = responses.DistinctBy(x => x.Country).Count();
             var totalResponses = responses.Count();
 
+            var geoJson = _geoService.GenerateGeoJson(responses);
+
             var viewModel = new MapViewModel
             {
                 TotalCountries = totalCountries,
                 TotalResponses = totalResponses,
                 LocationCodes = countByCountry.Select(x => x.Country).ToList(),
                 Values = countByCountry.Select(x => x.Count).ToList(),
+                GeoJson = geoJson
             };
             return View(viewModel);
         }
+        
 
         public async Task<IActionResult> Results(Guid? id)
         {
