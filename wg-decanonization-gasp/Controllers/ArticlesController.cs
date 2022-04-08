@@ -20,7 +20,7 @@ namespace GaspApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var articles = (await _dbContext.Articles.Include(x => x.Contents).ToListAsync()).Where(x => x.IsPublished()).ToList();
+            var articles = (await _dbContext.Articles.Include(x => x.Contents).ToListAsync()).OrderByDescending(x => x.PublishedDate).Where(x => x.IsPublished()).ToList();
             var model = new ArticlesIndexViewModel
             {
                 Articles = articles
