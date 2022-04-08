@@ -41,9 +41,14 @@ namespace GaspApp.Controllers
                     return RedirectToAction(nameof(List), routeValues: new { code = 2 });
             }
             else
-                model = (await _dbContext.Surveys.Include(x => x.Items).ToListAsync())
+            {
+                var options = (await _dbContext.Surveys.Include(x => x.Items).ToListAsync())
                     .Where(x => x.IsActive())
-                    .FirstOrDefault(x => !_dbContext.SurveyResponses.Any(r => r.ResponderId == surveyResponderId && r.Survey == x));
+                    .Where(x => !_dbContext.SurveyResponses.Any(r => r.ResponderId == surveyResponderId && r.Survey == x));
+                if (options.Count() > 1)
+                    ViewBag.AllowNext = true;
+                model = options.FirstOrDefault();
+            }
 
             if (model == null)
                 return RedirectToAction(nameof(List), routeValues: new { code = 1 });
@@ -82,10 +87,9 @@ namespace GaspApp.Controllers
             _dbContext.SaveChanges();
 
             if (kv["route"] == "another")
-            {
-                /* TODO another */
-            }
-            return RedirectToAction(nameof(Results), routeValues: new { id = survey.Id });
+                return RedirectToAction(nameof(Index));
+            else
+                return RedirectToAction(nameof(Results), routeValues: new { id = survey.Id });
         }
 
         public async Task<IActionResult> Map()

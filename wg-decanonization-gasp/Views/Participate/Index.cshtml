@@ -8,6 +8,7 @@
 	ViewData["Title"] = Localizer["Survey"];
 	var GroupLocalizer = Localizer.ScopeForGroup(Model!.LocalGroup);
 	var Preview = ViewBag.Preview != null && ViewBag.Preview == true;
+	var AllowNext = ViewBag.AllowNext != null && ViewBag.AllowNext == true;
 
 	var cultureItems = Options.Value!.SupportedCultures!
 		.Select(x => new SelectListItem { Value = x.TwoLetterISOLanguageName, Text = x.NativeName })
@@ -131,11 +132,11 @@
 				@if (Preview)
 				{
 					<button class="button is-success" type="submit" name="route" value="preview" disabled>@Localizer["Submit and Answer Another"]</button>
-					<button class="button is-success" type="submit" name="route" value="preview" disabled>@Localizer["Submit and View Results"]</button>	
+					<button class="button is-success" type="submit" name="route" value="preview" disabled>@Localizer["Submit and View Results"]</button>
 				}
 				else
 				{
-					<button class="button is-success" type="submit" name="route" value="another" disabled title="@Localizer["No more surveys to answer"]">@Localizer["Submit and Answer Another"]</button>
+					<button class="button is-success" type="submit" name="route" value="another" @if (!AllowNext) { @Html.Raw("disabled"); } title="@Localizer["No more surveys to answer"]">@Localizer["Submit and Answer Another"]</button>
 					<button class="button is-success" type="submit" name="route" value="results">@Localizer["Submit and View Results"]</button>	
 				}
 				<a class="button is-warning" asp-action="Results" asp-route-id="@Model.Id">@Localizer["View Results"]</a>
