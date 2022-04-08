@@ -5,6 +5,7 @@
         public Survey Survey { get; set; }
         public int TotalResponses { get; set; }
         public int UniqueCountries { get; set; }
+        public List<string> CountryNames { get; set; }
         public List<QuestionResult> Questions { get; set; }
     }
 

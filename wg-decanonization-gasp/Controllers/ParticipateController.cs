@@ -123,11 +123,13 @@ namespace GaspApp.Controllers
             if (survey == null)
                 return NotFound();
             var results = await _dbContext.SurveyResponses.Where(x => x.Survey == survey).ToListAsync();
-            
+            var uniqueCountries = results.DistinctBy(x => x.Country).Select(x => _geoService.GetCountryName(x.Country));
+
             var model = new ResultsViewModel();
             model.Survey = survey;
             model.TotalResponses = results.Count;
-            model.UniqueCountries = results.DistinctBy(x => x.Country).Count();
+            model.UniqueCountries = uniqueCountries.Count();
+            model.CountryNames = uniqueCountries.Where(x => !string.IsNullOrWhiteSpace(x)).OrderBy(x => x).ToList();
             model.Questions = new List<QuestionResult>();
             foreach (var item in survey.Items.OrderBy(x => x.Position))
             {

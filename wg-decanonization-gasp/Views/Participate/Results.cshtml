@@ -12,7 +12,10 @@
 	</div>
 </section>
 <section class="section">
-	<h2 class="subtitle is-6">@Html.Raw(string.Format(Localizer["This survey received {0} responses from {1} countries."].ToString(), $"<b>{Model.TotalResponses}</b>", $"<b>{Model.UniqueCountries}</b>"))</h2>
+	<h2 class="subtitle is-6">@Html.Raw(string.Format(Localizer["This survey received {0} responses from {1} countries{2}"].ToString(), 
+		$"<b>{Model.TotalResponses}</b>", $"<b>{Model.UniqueCountries}</b>",
+		Model.UniqueCountries > 0 ? ": " + string.Join(", ", Model.CountryNames): ""))
+	</h2>
 
 	@foreach(var question in Model.Questions)
 	{
@@ -27,18 +30,21 @@
 						{
 							<li>
 								@response.TranslatedText
-								<div class="dropdown is-hoverable">
-									<div class="dropdown-trigger">
-										<span class="tag is-dark">@Localizer["Original Text"] <span class="icon is-small"><i class="fas fa-angle-down"></i></span></span>
-									</div>
-									<div class="dropdown-menu">
-										<div class="dropdown-content">
-											<div class="dropdown-item">
-												@response.OriginalText
+								@if (!string.Equals(response.TranslatedText, response.OriginalText))
+								{
+									<div class="dropdown is-hoverable">
+										<div class="dropdown-trigger">
+											<span class="tag is-dark">@Localizer["Original Text"] <span class="icon is-small"><i class="fas fa-angle-down"></i></span></span>
+										</div>
+										<div class="dropdown-menu">
+											<div class="dropdown-content">
+												<div class="dropdown-item">
+													@response.OriginalText
+												</div>
 											</div>
 										</div>
 									</div>
-								</div>
+								}
 							</li>
 						}
 					</ul>
