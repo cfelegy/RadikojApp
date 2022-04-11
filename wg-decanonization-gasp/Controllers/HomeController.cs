@@ -29,9 +29,31 @@ namespace GaspApp.Controllers
                 if ((content = featureArticle.Contents.FirstOrDefault(x => x.Culture == cultureName)) != null)
                     ViewBag.ArticleContent = content;
                 else
-                    ViewBag.ArticleContent = featureArticle.Contents.FirstOrDefault();
+                    ViewBag.ArticleContent = featureArticle.Contents.FirstOrDefault()!;
                 ViewBag.MostRecentArticle = featureArticle;
             }
+
+            var homeArticle = await _dbContext.Articles.Include(a => a.Contents)
+                .FirstOrDefaultAsync(a => a.Slug == "[home]");
+            if (homeArticle == null)
+            {
+                homeArticle = new Article
+                {
+                    Slug = "[home]",
+                    PublishedDate = DateTimeOffset.MaxValue,
+                    Author = null,
+                    Contents = new List<ArticleContent>(),
+                    Id = Guid.NewGuid(),
+                };
+                _dbContext.Articles.Add(homeArticle);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            ArticleContent? homeContent;
+            if ((homeContent = homeArticle.Contents.FirstOrDefault(x => x.Culture == cultureName)) != null)
+                ViewBag.HomeContent = homeContent;
+            else
+                ViewBag.HomeContent = homeArticle.Contents.FirstOrDefault()!;
 
             return View();
         }
