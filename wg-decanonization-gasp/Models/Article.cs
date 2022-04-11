@@ -19,5 +19,9 @@ namespace GaspApp.Models
 
             return at >= PublishedDate;
         }
+        public virtual bool IsSpecialPage()
+		{
+            return Slug == "[home]";
+		}
     }
 }

@@ -28,7 +28,7 @@ namespace GaspApp.Controllers
             var surveys = _dbContext.Surveys.ToList();
             var model = new DashboardIndexViewModel
             {
-                Articles = articles,
+                Articles = articles ,
                 Surveys = surveys.Select(x =>
                 {
                     return new WrappedSurvey

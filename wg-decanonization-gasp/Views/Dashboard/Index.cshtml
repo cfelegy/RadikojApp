@@ -48,9 +48,20 @@
 					</tr>
 				</thead>
 				<tbody>
-				@foreach (var art in Model.Articles.OrderByDescending(x => x.PublishedDate))
+				@foreach (var art in Model!.Articles.Where(a => a.IsSpecialPage()))
 				{
-					var locales = art.Contents.Select(c => c.Culture);
+					<tr class="has-background-dark">
+						<td><span class="has-text-light has-text-weight-bold">Page: @art.Slug</td>
+						@foreach (var button in LocaleButtons(art))
+						{
+							<td>@button</td>
+						}
+						<td></td>
+						<td></td>
+					</tr>
+				}
+				@foreach (var art in Model!.Articles.OrderByDescending(x => x.PublishedDate).Where(a => !a.IsSpecialPage()))
+				{
 					<tr>
 						<td><p>@art.Slug</p></td>
 						@foreach (var button in LocaleButtons(art))

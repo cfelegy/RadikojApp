@@ -1,42 +1,60 @@
 ﻿@using Humanizer
 @inject SharedViewLocalizer Localizer
 
+
 @{
-	ViewData["Title"] = "Home";
+	ViewData["Title"] = Localizer["Home"];
+
 	Article? featureArticle = ViewBag.MostRecentArticle;
 	ArticleContent? featureContent = ViewBag.ArticleContent;
 
 	ArticleContent? homeContent = ViewBag.HomeContent;
 
-	string? featureArticleString;
+	string? featureArticleString = null;
 	if (featureArticle != null && featureContent != null)
 	{
-		featureArticleString = ""; // TODO!
+		featureArticleString = string.Format(@"
+		<section class=""section"">
+	<div class=""box"">
+		<h1 class=""title is-4"">{0}</h1>
+		<br />
+		<h2 class=""subtitle is-5"">{1} <small>{2}</small></h2>
+		<p>
+	{3} <a href=""/Articles/{4}"">{5}</a>
+		</p>
+	</div>
+		</section>
+		", Localizer["Our most recent announcement"], featureContent.Title, featureArticle.PublishedDate.Humanize(),
+			featureContent.Synopsis(250), featureArticle.Slug, Localizer["Read more"]
+		);
+	}
+
+	string? homeContentHtml = null;
+	if (homeContent != null)
+	{
+		homeContentHtml = GaspApp.Services.MarkdownService.CreateHtmlString(homeContent.Body).Value!;
+		if (featureArticleString != null)
+			homeContentHtml = homeContentHtml.Replace("[[feature_article]]", featureArticleString);
+		else
+			homeContentHtml = homeContentHtml.Replace("[[feature_article]]", "");
 	}
 }
 
 <div class="container">
 	<section class="section">
-		<h1 class="title">@Localizer["Antro Radikoj"]</h1>
-		<h2 class="subtitle">@Localizer["The global anthropology syllabus project"]</h2>
-	</section>
-	@if (featureArticle != null && featureContent != null)
-	{ 
-		<section class="section">
-			<div class="box">
-				<h1 class="title is-4">@Localizer["Our most recent announcement"]</h1>
-				<br />
-				<h2 class="subtitle is-5">@featureContent.Title <small>@featureArticle.PublishedDate.Humanize()</small></h2>
-				<p>
-					@featureContent.Synopsis(250) <a href="/Articles/@featureArticle.Slug">@Localizer["Read more"]</a>
-				</p>
+
+		@if (homeContentHtml != null)
+		{
+			<div class="content">
+				@Html.Raw(homeContentHtml)
 			</div>
-		</section>
-	}
-	
-	@homeContent
-	
-	<section class="section">
-		<p>@Localizer["This project has received support from the Wenner-Gren Foundation"]</p>
+		}
+		else
+		{
+			<div class="notification is-danger">
+				The site administrator has not yet configured the home page.
+			</div>
+		}
+
 	</section>
 </div>
