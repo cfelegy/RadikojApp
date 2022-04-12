@@ -1,34 +1,60 @@
-﻿@model List<Account>
+﻿@using System.Security.Claims
+@model List<Account>
 
 @{
 	ViewData["Title"] = "Access Management";
+	var isSuperUser = Context.User.Claims.Single(c => c.Type == "SuperUser").Value == true.ToString();
 }
 
 <div class="container">
 	<section class="section">
 		<h1 class="title">Manage Access</h1>
 		<h2 class="subtitle">Configure access for translators and collaborators</h2>
-		<h2>TODO: this page is WIP</h2>
 
 		<table class="table">
 			<thead>
 				<tr>
 					<th>Email Address</th>
 					<th>Friendly Name</th>
-					<th>Role</th>
+					<th>Superuser?</th>
+					<th>Disabled?</th>
 					<th>Last Logged In</th>
-					<th>Actions</th>
+					<th colspan="2">Actions</th>
 				</tr>
 			</thead>
 			<tbody>
-				@foreach (var account in Model!)
+				@foreach (var account in Model!.OrderBy(a => a.Email))
 				{
 					<tr>
 						<td>@account.Email</td>
 						<td>@account.DisplayName</td>
-						<td>(none)</td>
-						<td>(none)</td>
-						<td>no actions</td>
+						<td>@account.SuperUser</td>
+						<td>@account.Disabled</td>
+						<td>@(account.LastLoggedInAt.HasValue ? account.LastLoggedInAt.Value.ToLocalTime().ToString() : "[never]") </td>
+						@if (isSuperUser)
+						{
+							<td>
+								@if (account.Id.ToString() == Context.User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value)
+								{
+									<a class="button is-warning is-static">Current Account</a>
+								}
+								else if (account.Disabled)
+								{
+									<a class="button is-warning is-outlined" asp-action="AlterAccountState" asp-route-id="@account.Id" asp-route-state="enable">Enable</a>
+								}
+								else
+								{
+									<a class="button is-danger is-outlined" asp-action="AlterAccountState" asp-route-id="@account.Id" asp-route-state="disable">Disable</a>
+								}
+								<a class="button is-static" asp-action="Modify" asp-route-id="@account.Id">Modify</a>
+							</td>
+						}
+						else
+						{
+							<td colspan="2">
+								<a class="button is-static">Not Authorized</a>
+							</td>
+						}
 					</tr>
 				}
 			</tbody>

@@ -29,6 +29,9 @@ namespace GaspApp.Services
             if (account == null)
                 return SignInErrorType.NotFound;
 
+            if (account.Disabled)
+                return SignInErrorType.Disabled;
+
             var token = RandomToken(16);
             account.LoginToken = token;
             account.LoginTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(15);
@@ -45,7 +48,7 @@ Thank you.
 ";
             string content = string.Format(contentTemplate, email, token);
 
-            var msg = MailHelper.CreateSingleEmail(from, to, "Antro Radikoj Login Code", content, content);
+            var msg = MailHelper.CreateSingleEmail(from, to, "Antro Radikoj Login Code", content, null);
             var response = await _sendGridClient.SendEmailAsync(msg);
             if (!response.IsSuccessStatusCode)
                 return SignInErrorType.SendEmailFailed;
@@ -62,6 +65,9 @@ Thank you.
             if (account == null)
                 return SignInErrorType.NotFound;
 
+            if (account.Disabled)
+                return SignInErrorType.Disabled;
+
             if (viewModel.Token != account.LoginToken)
                 return SignInErrorType.InvalidToken;
             if (account.LoginTokenExpiresAt < DateTimeOffset.UtcNow)
@@ -75,6 +81,10 @@ Thank you.
 
             ClaimsIdentity identity = new ClaimsIdentity(GetClaims(account), CookieAuthenticationDefaults.AuthenticationScheme);
             ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+
+            account.LastLoggedInAt = DateTimeOffset.UtcNow;
+            _dbContext.Update(account);
+            await _dbContext.SaveChangesAsync();
 
             await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
@@ -92,9 +102,9 @@ Thank you.
             {
                 new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
                 new Claim(ClaimTypes.Name, account.DisplayName),
-                new Claim(ClaimTypes.Email, account.Email)
+                new Claim(ClaimTypes.Email, account.Email),
+                new Claim("SuperUser", account.SuperUser.ToString())
             };
-            // TODO: Role Claims
 
             return claims;
         }

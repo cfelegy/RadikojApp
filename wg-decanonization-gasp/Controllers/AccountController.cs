@@ -1,4 +1,5 @@
 ﻿using GaspApp.Data;
+using GaspApp.Models;
 using GaspApp.Models.AccountViewModels;
 using GaspApp.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -79,6 +80,24 @@ namespace GaspApp.Controllers
             var accounts = _dbContext.Accounts.ToList();
             return View(accounts);
 		}
+
+        [Authorize] // TODO: require superuser
+        public async Task<IActionResult> AlterAccountState(Guid id, string state)
+        {
+            if (!(state == "enable" || state == "disable"))
+                return NotFound();
+            var account = await _dbContext.Accounts.FindAsync(id);
+            if (account == null)
+                return NotFound();
+
+            var stateBool = state == "disable";
+            account.Disabled = stateBool;
+
+            _dbContext.Update(account);
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToAction(nameof(ListAll));
+        }
 
         private IActionResult ReturnUrlAction(string? returnUrl)
         {

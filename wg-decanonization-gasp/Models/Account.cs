@@ -11,6 +11,8 @@ namespace GaspApp.Models
         public string DisplayName { get; set; }
         public string LoginToken { get; set; }
         public DateTimeOffset LoginTokenExpiresAt { get; set; }
-        //public string HashedPassword { get; set; }
+        public DateTimeOffset? LastLoggedInAt { get; set; }
+        public bool SuperUser { get; set; }
+        public bool Disabled { get; set; }
     }
 }

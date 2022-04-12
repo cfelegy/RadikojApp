@@ -6,5 +6,6 @@
         InvalidToken,
         SendEmailFailed,
         ExpiredToken,
+        Disabled,
     }
 }
