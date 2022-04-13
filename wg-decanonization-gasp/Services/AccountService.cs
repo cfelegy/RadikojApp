@@ -1,26 +1,24 @@
-﻿using GaspApp.Data;
-using GaspApp.Models;
-using GaspApp.Models.AccountViewModels;
+﻿using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using Radikoj.Data;
+using Radikoj.Models;
+using Radikoj.Models.AccountViewModels;
 
-namespace GaspApp.Services
+namespace Radikoj.Services
 {
     public class AccountService
     {
-        private readonly GaspDbContext _dbContext;
-        private readonly IPasswordHasher<Account> _passwordHasher;
+        private readonly RadikojDbContext _dbContext;
         private readonly SendGridClient _sendGridClient;
-		public AccountService(GaspDbContext dbContext, IPasswordHasher<Account> passwordHasher, SendGridClient sendGridClient)
+		public AccountService(RadikojDbContext dbContext, SendGridClient sendGridClient)
 		{
 			_dbContext = dbContext;
-			_passwordHasher = passwordHasher;
 			_sendGridClient = sendGridClient;
 		}
 		public async Task<SignInErrorType?> CreateSignInToken(string email)

@@ -1,9 +1,9 @@
-﻿using GaspApp.Data;
-using GaspApp.Models;
+﻿using System.Globalization;
 using Microsoft.Extensions.Localization;
-using System.Globalization;
+using Radikoj.Data;
+using Radikoj.Models;
 
-namespace GaspApp.Services
+namespace Radikoj.Services
 {
     public class DbStringLocalizer : IStringLocalizer
     {
@@ -21,7 +21,7 @@ namespace GaspApp.Services
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
             using var scope = _serviceScopeFactory.CreateScope();
-            using var db = scope.ServiceProvider.GetService<GaspDbContext>();
+            using var db = scope.ServiceProvider.GetService<RadikojDbContext>();
             return db!.LocalizedItems
                 .Where(r => r.CultureCode == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
                 .Select(x => new LocalizedString(x.Key, x.Text));
@@ -30,7 +30,7 @@ namespace GaspApp.Services
         public LocalizedString GetLocalizedString(string key, string? group = default)
         {
             using var scope = _serviceScopeFactory.CreateScope();
-            using var db = scope.ServiceProvider.GetService<GaspDbContext>();
+            using var db = scope.ServiceProvider.GetService<RadikojDbContext>();
 
             group = group ?? "[global]";
 
@@ -43,7 +43,7 @@ namespace GaspApp.Services
             return new LocalizedString(key, item?.Text ?? key, item == null);
         }
 
-        public void CreateTranslationSet(GaspDbContext db, string key, string group)
+        public void CreateTranslationSet(RadikojDbContext db, string key, string group)
         {
             foreach (var cul in LocaleConstants.SUPPORTED_LOCALES_TWOLETTERS)
             {

@@ -1,22 +1,21 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using GaspApp.Data;
-using GaspApp.Models.DashboardViewModels;
-using GaspApp.Models;
-using System.Security.Claims;
-using GaspApp.Services;
-using System.Linq;
+using Radikoj.Data;
+using Radikoj.Models;
+using Radikoj.Models.DashboardViewModels;
+using Radikoj.Services;
 
-namespace GaspApp.Controllers
+namespace Radikoj.Controllers
 {
     [Authorize]
     public class DashboardController : Controller
     {
-        private GaspDbContext _dbContext;
+        private RadikojDbContext _dbContext;
         private AzureTranslationService _translationService;
 
-        public DashboardController(GaspDbContext dbContext, AzureTranslationService translationService)
+        public DashboardController(RadikojDbContext dbContext, AzureTranslationService translationService)
         {
             _dbContext = dbContext;
             _translationService = translationService;
@@ -28,7 +27,7 @@ namespace GaspApp.Controllers
             var surveys = _dbContext.Surveys.ToList();
             var model = new DashboardIndexViewModel
             {
-                Articles = articles ,
+                Articles = articles,
                 Surveys = surveys.Select(x =>
                 {
                     return new WrappedSurvey
@@ -44,6 +43,8 @@ namespace GaspApp.Controllers
         public async Task<IActionResult> CreateArticle()
         {
             var account = await _dbContext.Accounts.FindAsync(new Guid(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value));
+            if (account == null)
+                return NotFound("account");
             var article = new Article
             {
                 Author = account,
@@ -57,7 +58,7 @@ namespace GaspApp.Controllers
         }
 
         public async Task<IActionResult> DeleteArticle(Guid id)
-		{
+        {
             var article = await _dbContext.Articles.FindAsync(id);
             if (article == null)
                 return NotFound();
@@ -68,7 +69,7 @@ namespace GaspApp.Controllers
             _dbContext.Articles.Remove(article);
             await _dbContext.SaveChangesAsync();
             return RedirectToAction("Index");
-		}
+        }
 
         public async Task<IActionResult> ModifyArticle(Guid id)
         {
@@ -108,14 +109,14 @@ namespace GaspApp.Controllers
         }
 
         public async Task<IActionResult> CreateContent(Guid articleId, string locale)
-		{
+        {
             if (!LocaleConstants.SUPPORTED_LOCALES.Contains(locale))
                 return BadRequest("locale not supported");
-            
+
             var article = await _dbContext.Articles.FindAsync(articleId);
             if (article == null)
                 return NotFound("article");
-            
+
             await _dbContext.Entry(article).Collection(x => x.Contents).LoadAsync();
             if (article.Contents.Any(x => x.Culture == locale))
                 return BadRequest("locale already exists");
@@ -131,10 +132,10 @@ namespace GaspApp.Controllers
             await _dbContext.SaveChangesAsync();
 
             return RedirectToAction(nameof(ModifyContent), routeValues: new { articleId = article.Id, contentId = content.Id });
-		}
+        }
 
         public async Task<IActionResult> ModifyContent(Guid articleId, Guid contentId)
-		{
+        {
             var article = await _dbContext.Articles.FindAsync(articleId);
             if (article == null)
                 return NotFound();
@@ -148,12 +149,12 @@ namespace GaspApp.Controllers
                 Content = content,
             };
             return View(content);
-		}
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ModifyContent(Guid id, [Bind("Title", "Body")] ArticleContent content)
-		{
+        {
             var dbCopy = _dbContext.Articles.Include(x => x.Contents).SelectMany(x => x.Contents).FirstOrDefault(c => c.Id == id);
             if (dbCopy == null)
                 return NotFound();
@@ -169,10 +170,10 @@ namespace GaspApp.Controllers
             }
 
             if (ModelState.IsValid)
-			{
+            {
                 dbCopy.Title = content.Title;
                 dbCopy.Body = content.Body;
-                
+
                 if (autoConvert)
                 {
                     var article = _dbContext.Articles.Include(a => a.Contents).FirstOrDefault(a => a.Contents.Any(c => c.Id == id));
@@ -190,9 +191,9 @@ namespace GaspApp.Controllers
 
                 await _dbContext.SaveChangesAsync();
                 return RedirectToAction("Index");
-			}
+            }
             return View(dbCopy);
-		}
+        }
 
         public async Task<IActionResult> CreateSurvey()
         {
@@ -269,7 +270,8 @@ namespace GaspApp.Controllers
                     item = new SurveyItem();
                 else
                 {
-                    if (!Guid.TryParse(itemKey, out var itemId)) {
+                    if (!Guid.TryParse(itemKey, out var itemId))
+                    {
                         return StatusCode(400);
                     }
                     var maybeItem = await _dbContext.SurveyItems.FindAsync(itemId);
@@ -283,7 +285,7 @@ namespace GaspApp.Controllers
                 item.ItemType = (SurveyItemType)Enum.Parse(typeof(SurveyItemType), form[$"si/{itemKey}/type"].Single());
                 item.Position = int.Parse(form[$"si/{itemKey}/position"].Single());
                 item.ItemContents = form[$"si/{itemKey}/contents"].Single();
-                
+
                 survey.Items.Add(item);
             }
 
@@ -298,12 +300,12 @@ namespace GaspApp.Controllers
         }
 
         public IActionResult PreviewSurvey(Guid id)
-		{
+        {
             return RedirectToAction("Index", "Participate", new { id = id, preview = true });
-		}
+        }
 
         public IActionResult Translations(string group = "[global]")
-		{
+        {
             var groups = _dbContext.LocalizedItems.Select(i => i.Group).Distinct().OrderBy(i => i).ToList();
             var translations = _dbContext.LocalizedItems.ToList().Where(i => i.Group == group).GroupBy(i => i.Key).Select(
                 x =>
@@ -322,7 +324,7 @@ namespace GaspApp.Controllers
                 Items = translations.ToList(),
             };
             return View(model);
-		}
+        }
 
         public IActionResult ModifyTranslation([FromBody] TranslationsLocalizedItem model)
         {
@@ -330,7 +332,7 @@ namespace GaspApp.Controllers
         }
 
         public async Task<IActionResult> BulkAutoTranslation(string group)
-		{
+        {
             // TODO: DRY right above
             var translations = _dbContext.LocalizedItems.ToList().Where(i => i.Group == group).GroupBy(i => i.Key).Select(
                 x =>
@@ -343,9 +345,9 @@ namespace GaspApp.Controllers
                 }
             );
             foreach (var item in translations)
-			{
+            {
                 await AutoTranslation(item);
-			}
+            }
             return RedirectToAction(nameof(Translations), new { group = group });
         }
 

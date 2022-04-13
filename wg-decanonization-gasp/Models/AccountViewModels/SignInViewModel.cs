@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GaspApp.Models.AccountViewModels
+namespace Radikoj.Models.AccountViewModels
 {
     public class SignInViewModel
     {

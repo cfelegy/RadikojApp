@@ -1,7 +1,7 @@
-﻿using GaspApp.Services;
+﻿using Radikoj.Services;
 using Microsoft.Extensions.Localization;
 
-namespace GaspApp
+namespace Radikoj
 {
     public sealed class SharedViewLocalizer
     {

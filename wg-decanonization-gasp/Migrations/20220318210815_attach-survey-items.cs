@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace GaspApp.Migrations
+namespace Radikoj.Migrations
 {
     public partial class attachsurveyitems : Migration
     {

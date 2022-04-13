@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
-namespace GaspApp.Models
+namespace Radikoj.Models
 {
     public class Survey
     {

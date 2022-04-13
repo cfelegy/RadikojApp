@@ -1,19 +1,17 @@
-﻿using GaspApp.Data;
-using GaspApp.Models;
-using GaspApp.Models.ArticlesViewModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Localization;
+﻿using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+using Radikoj.Data;
+using Radikoj.Models;
+using Radikoj.Models.ArticlesViewModels;
 
-namespace GaspApp.Controllers
+namespace Radikoj.Controllers
 {
     public class ArticlesController : Controller
     {
-        private GaspDbContext _dbContext;
+        private RadikojDbContext _dbContext;
 
-        public ArticlesController(GaspDbContext dbContext)
+        public ArticlesController(RadikojDbContext dbContext)
         {
             _dbContext = dbContext;
         }

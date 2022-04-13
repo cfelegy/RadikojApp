@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System.Text;
+﻿using System.Text;
+using Newtonsoft.Json;
 
-namespace GaspApp.Services
+namespace Radikoj.Services
 {
     public class AzureTranslationService
     {

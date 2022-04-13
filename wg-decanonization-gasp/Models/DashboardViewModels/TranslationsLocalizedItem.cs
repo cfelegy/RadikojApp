@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Serialization;
-
-namespace GaspApp.Models.DashboardViewModels
+﻿namespace Radikoj.Models.DashboardViewModels
 {
     public class TranslationsLocalizedItem
     {

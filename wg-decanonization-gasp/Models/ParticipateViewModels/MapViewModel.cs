@@ -1,4 +1,4 @@
-﻿namespace GaspApp.Models.ParticipateViewModels
+﻿namespace Radikoj.Models.ParticipateViewModels
 {
 	public class MapViewModel
 	{

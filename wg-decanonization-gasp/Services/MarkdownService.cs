@@ -1,7 +1,7 @@
-﻿using Markdig;
-using Microsoft.AspNetCore.Html;
+﻿using Microsoft.AspNetCore.Html;
+using Markdig;
 
-namespace GaspApp.Services
+namespace Radikoj.Services
 {
 	public static class MarkdownService
 	{

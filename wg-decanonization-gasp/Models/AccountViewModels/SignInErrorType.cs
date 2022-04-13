@@ -1,4 +1,4 @@
-﻿namespace GaspApp.Models.AccountViewModels
+﻿namespace Radikoj.Models.AccountViewModels
 {
     public enum SignInErrorType
     {

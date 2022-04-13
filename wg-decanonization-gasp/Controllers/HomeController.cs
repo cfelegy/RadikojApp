@@ -1,17 +1,17 @@
 ﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using GaspApp.Models;
 using Microsoft.AspNetCore.Localization;
-using GaspApp.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Radikoj.Data;
+using Radikoj.Models;
 
-namespace GaspApp.Controllers
+namespace Radikoj.Controllers
 {
     public class HomeController : Controller
     {
-        private GaspDbContext _dbContext;
+        private RadikojDbContext _dbContext;
 
-        public HomeController(GaspDbContext dbContext)
+        public HomeController(RadikojDbContext dbContext)
 		{
             _dbContext = dbContext;
 		}

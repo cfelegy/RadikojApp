@@ -32,7 +32,7 @@
 	string? homeContentHtml = null;
 	if (homeContent != null)
 	{
-		homeContentHtml = GaspApp.Services.MarkdownService.CreateHtmlString(homeContent.Body).Value!;
+		homeContentHtml = Radikoj.Services.MarkdownService.CreateHtmlString(homeContent.Body).Value!;
 		if (featureArticleString != null)
 			homeContentHtml = homeContentHtml.Replace("[[feature_article]]", featureArticleString);
 		else

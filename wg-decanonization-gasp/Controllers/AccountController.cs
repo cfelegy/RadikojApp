@@ -1,18 +1,17 @@
-﻿using GaspApp.Data;
-using GaspApp.Models;
-using GaspApp.Models.AccountViewModels;
-using GaspApp.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Radikoj.Data;
+using Radikoj.Models.AccountViewModels;
+using Radikoj.Services;
 
-namespace GaspApp.Controllers
+namespace Radikoj.Controllers
 {
     public class AccountController : Controller
     {
         private readonly AccountService _accountService;
-        private readonly GaspDbContext _dbContext;
+        private readonly RadikojDbContext _dbContext;
 
-        public AccountController(AccountService accountService, GaspDbContext dbContext)
+        public AccountController(AccountService accountService, RadikojDbContext dbContext)
         {
             _accountService = accountService;
             _dbContext = dbContext;

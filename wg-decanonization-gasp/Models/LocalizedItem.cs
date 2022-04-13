@@ -1,4 +1,4 @@
-﻿namespace GaspApp.Models
+﻿namespace Radikoj.Models
 {
     public class LocalizedItem
     {

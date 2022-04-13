@@ -1,8 +1,8 @@
-﻿using GaspApp.Models;
-using GeoJSON.Net.Feature;
+﻿using GeoJSON.Net.Feature;
 using Newtonsoft.Json;
+using Radikoj.Models;
 
-namespace GaspApp.Services
+namespace Radikoj.Services
 {
     public class GeoService
     {

@@ -1,4 +1,4 @@
-﻿namespace GaspApp.Models.ArticlesViewModels
+﻿namespace Radikoj.Models.ArticlesViewModels
 {
 	public class ArticlesArticleViewModel
 	{

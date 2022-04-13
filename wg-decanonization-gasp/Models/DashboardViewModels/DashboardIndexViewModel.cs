@@ -1,4 +1,4 @@
-﻿namespace GaspApp.Models.DashboardViewModels
+﻿namespace Radikoj.Models.DashboardViewModels
 {
     public class DashboardIndexViewModel
     {

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace GaspApp.Migrations
+namespace Radikoj.Migrations
 {
     public partial class removejsonitem : Migration
     {

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 
-namespace GaspApp.Models
+namespace Radikoj.Models
 {
     [Index(nameof(Email), IsUnique = true)]
     public class Account

@@ -1,4 +1,4 @@
-﻿@model GaspApp.Models.ArticlesViewModels.ArticlesArticleViewModel
+﻿@model Radikoj.Models.ArticlesViewModels.ArticlesArticleViewModel
 @inject SharedViewLocalizer Localizer
 @using Humanizer
 
@@ -15,7 +15,7 @@
 <div class="container">
 	<section class="section">
 		<div class="content">
-			@GaspApp.Services.MarkdownService.CreateHtmlString(Model.Content.Body)
+			@Radikoj.Services.MarkdownService.CreateHtmlString(Model.Content.Body)
 		</div>
 	</section>
 </div>

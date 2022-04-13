@@ -1,8 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Localization
 @using Microsoft.Extensions.Options
 
-@inject SharedViewLocalizer Localizer
 @inject IOptions<RequestLocalizationOptions> Options
+@inject SharedViewLocalizer Localizer
 
 @{
 	var returnUrl = string.Concat("~", Context.Request.Path.Value ?? "/");

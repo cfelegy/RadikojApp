@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace GaspApp.Models
+namespace Radikoj.Models
 {
     public class SurveyResponse
     {

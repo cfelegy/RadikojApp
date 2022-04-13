@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace GaspApp.Models
+namespace Radikoj.Models
 {
     [Index(nameof(Slug), IsUnique = true)]
     public class Article

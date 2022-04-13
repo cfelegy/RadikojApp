@@ -1,21 +1,21 @@
-﻿using GaspApp.Data;
-using GaspApp.Models;
-using GaspApp.Models.ParticipateViewModels;
-using GaspApp.Services;
-using Microsoft.AspNetCore.Localization;
+﻿using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Radikoj.Data;
+using Radikoj.Models;
+using Radikoj.Models.ParticipateViewModels;
+using Radikoj.Services;
 
-namespace GaspApp.Controllers
+namespace Radikoj.Controllers
 {
     public class ParticipateController : Controller
     {
         private AzureTranslationService _translationService;
-        private GaspDbContext _dbContext;
+        private RadikojDbContext _dbContext;
         private GeoService _geoService;
 
-        public ParticipateController(AzureTranslationService translationService, GaspDbContext dbContext, GeoService geoService)
+        public ParticipateController(AzureTranslationService translationService, RadikojDbContext dbContext, GeoService geoService)
         {
             _translationService = translationService;
             _dbContext = dbContext;
