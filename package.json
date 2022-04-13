@@ -1,11 +1,11 @@
 {
-  "name": "wg-decanonization-gasp",
+  "name": "radikoj",
   "scripts": {
-    "css-build": "node-sass --omit-source-map-url sass/style.scss wg-decanonization-gasp/wwwroot/css/styleb.css"
+    "css-build": "node-sass --omit-source-map-url sass/style.scss radiok/wwwroot/css/styleb.css"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Big-Data-Analytics-Lab-USF/GaspApp.git"
+    "url": "git+https://github.com/Big-Data-Analytics-Lab-USF/RadikojApp.git"
   },
   "devDependencies": {
     "bulma": "^0.9.3",
