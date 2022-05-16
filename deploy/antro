@@ -1,0 +1,10 @@
+#!/sbin/openrc-run
+
+command=/home/antro/antro-run
+command_background=true
+command_user="antro:antro"
+pidfile="/run/${RC_SVCNAME}.pid"
+
+depend() {
+    need postgresql nginx
+}
