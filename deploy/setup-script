@@ -1,0 +1,147 @@
+### Setup Alpine
+setup-alpine
+
+# Keyboard layout: us
+# IPv4: eth0, dhcp
+# IPv6: no
+# Password: change
+# Timezone: America/New_York
+# HTTP Proxy: none
+# NTP Client: chrony
+# Mirror: f
+# SSH Server: openssh
+# Disk: vda, sys, y
+
+# ** Dismount ISO in Vultr panel **
+# ** Automatic reboot **
+
+### Initial configuration changes
+apk update
+apk upgrade
+apk add vim git
+
+vim /etc/apk/repositories # enable community
+apk update
+
+vim /etc/motd
+
+vim /etc/ssh/sshd_config
+#   PermitRootLogin no
+#   MaxAuthTries 1
+#   PasswordAuthentication no
+
+apk add doas
+adduser -D -G wheel admin
+vim /etc/doas.d/doas.conf
+#   permit nopass :wheel
+#   permit nopass acme cmd nginx args -s reload
+passwd admin # change
+doas -u admin ash
+cd
+mkdir .ssh
+wget -O .ssh/authorized_keys https://github.com/cfelegy.keys
+exit
+
+passwd -l root
+exit
+
+### SSH from admin account
+ssh admin@hostname
+
+# Install nginx
+doas apk add nginx
+doas adduser -D -H -G www www
+doas mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.original
+# Copy nginx.conf from deploy/
+# Comment out ssl directives and listen 443 directives
+doas service nginx restart
+
+# Set-up acme
+doas apk add uacme openssl moreutils 
+doas adduser -h /var/lib/acme -s /sbin/nologin -D acme
+doas mkdir -p /etc/ssl/uacme/private /var/www/.well-known/acme-challenge
+doas chown acme:acme /etc/ssl/uacme /etc/ssl/uacme/private
+doas chmod g+rX /etc/ssl/uacme /etc/ssl/uacme/private
+doas chown acme:acme /var/www/.well-known/acme-challenge
+doas touch /var/log/acme.log
+doas chown acme:acme /var/log/acme.log
+doas vim /usr/local/bin/acme-update-certs # acme-update-certs
+doas chmod +x /usr/local/bin/acme-update-certs
+doas adduser nginx acme
+doas -u acme uacme new certs@felegy.net
+doas -u acme ash
+EDITOR=vim crontab -e
+#   MAILTO=certs@felegy.net
+#   0 0 * * * chronic /usr/local/bin/acme-update-certs
+exit
+# comment ssl_ in nginx conf
+doas -u acme /usr/local/bin/acme-update-certs
+cat /var/log/acme.log
+# uncomment ssl_
+doas chmod -R g+rX /etc/ssl/uacme /etc/ssl/uacme/private
+doas nginx -s reload
+doas rc-update add nginx default
+
+### Verify everything so far is set up correctly
+doas reboot
+
+### Install Postgres
+doas apk add postgresql
+doas service postgresql setup
+doas service postgresql start
+doas rc-update add postgresql default
+doas -u postgres psql
+#   CREATE DATABASE antro_db;
+#   CREATE USER antro WITH ENCRYPTED PASSWORD 'password';
+#   GRANT ALL PRIVILEGES ON DATABASE antro_db TO antro;
+#   \q
+
+### Install .NET Core
+doas apk add bash icu-libs krb5-libs libgcc libintl libssl1.1 libstdc++ zlib
+doas adduser -D antro
+doas -u antro ash
+cd
+wget https://dot.net/v1/dotnet-install.sh
+chmod +x dotnet-install.sh
+./dotnet-install.sh
+vim dotnet-env
+#   #!/bin/ash
+#   export DOTNET_ROOT=~/.dotnet
+#   export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+chmod +x dotnet-env
+. dotnet-env
+dotnet tool install --global dotnet-ef
+
+# Install Antro
+git clone https://github.com/Big-Data-Analytics-Lab-USF/RadikojApp
+cd RadikojApp
+dotnet restore
+
+cd radikoj
+vim appsettings.json # Load secret keys
+dotnet ef database update
+
+vim antro-run
+#   #!/bin/ash 
+#   . ~/dotnet-env
+#   dotnet run -c Release --urls https://localhost:10000 --project ~/RadikojApp/radikoj/
+
+exit
+
+### Set up antro service
+doas vim /etc/init.d/antro
+# copy antro init.d file from contrib
+doas chmod oga+x /etc/init.d/antro
+doas rc-update add antro default
+
+### Add users to panel
+doas -u postgres psql
+#   \c antro_db
+#   BEGIN;
+#   INSERT INTO public."Accounts" ("Id", "Email", "LoginToken", "DisplayName", "LoginTokenExpiresAt", "Disabled", "SuperUser") VALUES ();
+#   COMMIT;
+#   \q
+
+### Final reboot
+doas reboot
+

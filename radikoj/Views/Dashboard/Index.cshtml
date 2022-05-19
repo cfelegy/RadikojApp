@@ -80,6 +80,7 @@
 						</td>
 						<td>
 							<a asp-action="ModifyArticle" asp-route-id="@art.Id" class="button is-primary is-small">Modify</a>
+							<a asp-controller="Articles" asp-action="Article" asp-route-slug="@art.Slug" class="button is-primary is-small">Preview</a>
 							<a asp-action="DeleteArticle" asp-route-id="@art.Id" class="button is-danger is-small" onclick="return cd()">
 								Delete
 							</a>

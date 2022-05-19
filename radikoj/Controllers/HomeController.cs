@@ -26,7 +26,7 @@ namespace Radikoj.Controllers
             if (featureArticle != null)
 			{
                 ArticleContent? content;
-                if ((content = featureArticle.Contents.FirstOrDefault(x => x.Culture == cultureName)) != null)
+                if ((content = featureArticle.Contents.FirstOrDefault(x => string.Equals(x.Culture, cultureName, StringComparison.OrdinalIgnoreCase))) != null)
                     ViewBag.ArticleContent = content;
                 else
                     ViewBag.ArticleContent = featureArticle.Contents.FirstOrDefault()!;
@@ -50,7 +50,7 @@ namespace Radikoj.Controllers
             }
 
             ArticleContent? homeContent;
-            if ((homeContent = homeArticle.Contents.FirstOrDefault(x => x.Culture == cultureName)) != null)
+            if ((homeContent = homeArticle.Contents.FirstOrDefault(x => string.Equals(x.Culture, cultureName, StringComparison.OrdinalIgnoreCase))) != null)
                 ViewBag.HomeContent = homeContent;
             else
                 ViewBag.HomeContent = homeArticle.Contents.FirstOrDefault()!;

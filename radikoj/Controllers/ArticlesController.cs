@@ -46,7 +46,7 @@ namespace Radikoj.Controllers
                 Article = article
             };
             ArticleContent? content;
-            if ((content = article.Contents.FirstOrDefault(x => x.Culture == cultureName)) != null)
+            if ((content = article.Contents.FirstOrDefault(x => string.Equals(x.Culture, cultureName, StringComparison.OrdinalIgnoreCase))) != null)
                 viewModel.Content = content;
 			else
 			{
