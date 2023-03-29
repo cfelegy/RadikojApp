@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using GaspApp.Models.AccountViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Radikoj.Data;
+using Radikoj.Models;
 using Radikoj.Models.AccountViewModels;
 using Radikoj.Services;
+using System.Security.Claims;
 
 namespace Radikoj.Controllers
 {
@@ -80,9 +83,12 @@ namespace Radikoj.Controllers
             return View(accounts);
 		}
 
-        [Authorize] // TODO: require superuser
+        [Authorize]
         public async Task<IActionResult> AlterAccountState(Guid id, string state)
         {
+            var currentAccount = await _dbContext.Accounts.FindAsync(new Guid(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value));
+            if (!currentAccount!.SuperUser) return Forbid();
+
             if (!(state == "enable" || state == "disable"))
                 return NotFound();
             var account = await _dbContext.Accounts.FindAsync(id);
@@ -95,6 +101,78 @@ namespace Radikoj.Controllers
             _dbContext.Update(account);
             await _dbContext.SaveChangesAsync();
 
+            return RedirectToAction(nameof(ListAll));
+        }
+        
+        [Authorize]
+        public async Task<IActionResult> AddUser()
+        {
+            var account = await _dbContext.Accounts.FindAsync(new Guid(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value));
+            if (!account!.SuperUser) return Forbid();
+
+            return View();
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> AddUser([FromForm] CreateUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+            
+            var account = await _dbContext.Accounts.FindAsync(new Guid(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value));
+            if (!account!.SuperUser) return Forbid();
+
+            _dbContext.Accounts.Add(new Account
+            {
+                Id = Guid.NewGuid(),
+                DisplayName = model.Name,
+                Email = model.Email.ToLower(),
+                Disabled = false,
+                LoginToken = "X",
+                LoginTokenExpiresAt = DateTimeOffset.MinValue,
+                SuperUser = false
+            });
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToAction(nameof(ListAll));
+        }
+        [Authorize]
+        public async Task<IActionResult> ModifyUser(Guid id)
+        {
+            var currentAccount = await _dbContext.Accounts.FindAsync(new Guid(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value));
+            if (!currentAccount!.SuperUser) return Forbid();
+
+            var account = await _dbContext.Accounts.FindAsync(id);
+            if (account == null) return NotFound("account id");
+
+            var model = new ModifyUserViewModel
+            {
+                Id = id,
+                Name = account.DisplayName,
+                Email = account.Email,
+                SuperUser = account.SuperUser
+            };
+
+            return View(model);
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> ModifyUser([FromForm] ModifyUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var currentAccount = await _dbContext.Accounts.FindAsync(new Guid(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)!.Value));
+            if (!currentAccount!.SuperUser) return Forbid();
+
+            var account = await _dbContext.Accounts.FindAsync(model.Id);
+            if (account == null) return NotFound("account id");
+
+            account.DisplayName = model.Name;
+            account.Email = model.Email.ToLower();
+            account.SuperUser = model.SuperUser;
+
+            await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(ListAll));
         }
 

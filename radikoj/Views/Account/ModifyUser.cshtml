@@ -1,0 +1,38 @@
+﻿@using GaspApp.Models.AccountViewModels
+@model ModifyUserViewModel
+@{
+	ViewData["Title"] = "Modify User";
+}
+
+<div class="container">
+	<section class="section">
+		<h1 class="title">Modify User</h1>
+		<form class="form" asp-action="ModifyUser">
+			<div asp-validation-summary="All" class="is-danger"></div>
+			<input type="hidden" asp-for="@Model.Id" />
+
+			<div class="field">
+				<label class="label" asp-for="@Model.Name">Name</label>
+				<div class="control">
+					<input class="input" type="text" asp-for="@Model.Name" required />
+				</div>
+			</div>
+			<div class="field">
+				<label class="label" asp-for="@Model.Email">Email Address</label>
+				<div class="control">
+					<input class="input" asp-for="@Model.Email" />
+				</div>
+			</div>
+			<div class="field">
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" asp-for="@Model.SuperUser" />
+					<label class="form-check-label" asp-for="@Model.Email">Is SuperUser (can enable/disable/create accounts)</label>
+				</div>
+			</div>
+
+			<div class="control">
+				<button class="button is-success" type="submit">Save Changes</button>
+			</div>
+		</form>
+	</section>
+</div>

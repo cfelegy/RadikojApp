@@ -1,0 +1,31 @@
+﻿@using GaspApp.Models.AccountViewModels
+@model CreateUserViewModel
+@{
+	ViewData["Title"] = "Add User";
+}
+
+<div class="container">
+	<section class="section">
+		<h1 class="title">Add User</h1>
+		<form class="form" asp-action="AddUser">
+			<div asp-validation-summary="All" class="is-danger"></div>
+
+			<div class="field">
+				<label class="label" asp-for="@Model.Name">Name</label>
+				<div class="control">
+					<input class="input" type="text" asp-for="@Model.Name" required />
+				</div>
+			</div>
+			<div class="field">
+				<label class="label" asp-for="@Model.Email">Email Address</label>
+				<div class="control">
+					<input class="input" asp-for="@Model.Email" />
+				</div>
+			</div>
+
+			<div class="control">
+				<button class="button is-success" type="submit">Submit</button>
+			</div>
+		</form>
+	</section>
+</div>

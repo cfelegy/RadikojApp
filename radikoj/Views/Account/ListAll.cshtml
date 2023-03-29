@@ -11,6 +11,8 @@
 		<h1 class="title">Manage Access</h1>
 		<h2 class="subtitle">Configure access for translators and collaborators</h2>
 
+		<a class="button is-info" asp-action="AddUser">Add New User</a>
+
 		<table class="table">
 			<thead>
 				<tr>
@@ -46,7 +48,7 @@
 								{
 									<a class="button is-danger is-outlined" asp-action="AlterAccountState" asp-route-id="@account.Id" asp-route-state="disable">Disable</a>
 								}
-								<a class="button is-static" asp-action="Modify" asp-route-id="@account.Id">Modify</a>
+								<a class="button is-outlined" asp-action="ModifyUser" asp-route-id="@account.Id">Modify</a>
 							</td>
 						}
 						else

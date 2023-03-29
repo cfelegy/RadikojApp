@@ -23,7 +23,8 @@ namespace Radikoj.Services
 		}
 		public async Task<SignInErrorType?> CreateSignInToken(string email)
 		{
-            var account = _dbContext.Accounts.SingleOrDefault(x => x.Email == email);
+            string emailLower = email.ToLower();
+            var account = _dbContext.Accounts.SingleOrDefault(x => x.Email == emailLower);
             if (account == null)
                 return SignInErrorType.NotFound;
 
@@ -59,7 +60,7 @@ Thank you.
 
         public async Task<SignInErrorType?> SignInAsync(HttpContext context, SignInViewModel viewModel)
         {
-            var account = _dbContext.Accounts.SingleOrDefault(a => string.Equals(a.Email, viewModel.Email)); // TODO: case-friendly?
+            var account = _dbContext.Accounts.SingleOrDefault(a => string.Equals(a.Email, viewModel.Email.ToLower()));
             if (account == null)
                 return SignInErrorType.NotFound;
 
