@@ -29,7 +29,7 @@
 						@foreach (var response in question.FreeResponses!)
 						{
 							<li>
-								@response.TranslatedText
+								@response.TranslatedText (@response.CountryName)
 								@if (!string.Equals(response.TranslatedText, response.OriginalText))
 								{
 									<div class="dropdown is-hoverable">

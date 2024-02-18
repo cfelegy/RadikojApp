@@ -154,6 +154,7 @@ namespace Radikoj.Controllers
                         {
                             OriginalText = result.Response.Value<string>(item.Name)!,
                             TranslatedText = translatedText.Translations.Single().Text,
+                            CountryName = result.Country,
                         };
                         questionResult.FreeResponses.Add(freeResponseAnswer);
                     }
@@ -166,7 +167,9 @@ namespace Radikoj.Controllers
                         questionResult.FixedResponses[key] = 0;
                     foreach (var result in results)
                     {
-                        var selections = result.Response.Value<string>(item.Name)!.Split(";;");
+                        var responseVal = result.Response.Value<string>(item.Name);
+                        if (responseVal == null) continue;
+                        var selections = responseVal.Split(";;");
                         foreach (var selection in selections)
                             questionResult.FixedResponses[selection] += 1;
                     }

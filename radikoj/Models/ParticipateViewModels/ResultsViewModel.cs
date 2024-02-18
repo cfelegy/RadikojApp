@@ -22,5 +22,6 @@
     {
         public string OriginalText { get; set; }
         public string TranslatedText { get; set; }
+        public string CountryName { get; set; }
     }
 }

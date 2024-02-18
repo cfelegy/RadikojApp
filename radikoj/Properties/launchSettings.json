@@ -10,10 +10,10 @@
   "profiles": {
     "wg_decanonization_gasp": {
       "commandName": "Project",
+      "applicationUrl": "https://localhost:7264;http://localhost:5264",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:7264;http://localhost:5264",
       "dotnetRunMessages": true
     },
     "IIS Express": {

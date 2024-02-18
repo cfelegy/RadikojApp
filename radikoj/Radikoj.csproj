@@ -8,6 +8,7 @@
 	<GenerateRuntimeConfigurationFiles>True</GenerateRuntimeConfigurationFiles>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'wg_decanonization_gasp' " />
   <ItemGroup>
     <Folder Include="wwwroot\lib\" />
   </ItemGroup>
