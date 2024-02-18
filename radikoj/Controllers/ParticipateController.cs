@@ -154,7 +154,7 @@ namespace Radikoj.Controllers
                         {
                             OriginalText = result.Response.Value<string>(item.Name)!,
                             TranslatedText = translatedText.Translations.Single().Text,
-                            CountryName = result.Country,
+                            CountryName = _geoService.GetCountryName(result.Country),
                         };
                         questionResult.FreeResponses.Add(freeResponseAnswer);
                     }
